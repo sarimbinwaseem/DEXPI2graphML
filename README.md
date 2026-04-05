@@ -58,9 +58,12 @@ A application for Windows 10 will be available soon.
 
 ## How to Use:
 The *DEXPI2graphML  converter* consists a graphical user interface (GUI) shown in Figure 2.
+
 On the upper left side you find a bar to browse the input folder, which containts the DEXPI-P&IDs you want to convert.
+
 On the left handside a console shows the output as well as the error log of the conversion process.
-On the left handside you will find a plot window which shows the converted plots.
+
+On the right handside you will find a plot window which shows the converted plots.
 
 <figure role="group">
   <img src="./figures/dexpi2graph_gui.png" alt="dexpi2graph GUI" width=600>
