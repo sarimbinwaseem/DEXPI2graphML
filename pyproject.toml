@@ -1,0 +1,16 @@
+[project]
+name = "dexpi2graphml-patched"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "lxml>=6.0.2",
+    "matplotlib>=3.9.4",
+    "networkx>=3.2.1",
+    "nltk>=3.9.2",
+    "openpyxl>=3.1.5",
+    "pandas>=2.3.3",
+    "pillow>=11.3.0",
+    "pysimplegui>=4.60.5.1",
+]
