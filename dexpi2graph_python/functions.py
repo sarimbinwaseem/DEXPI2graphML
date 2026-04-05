@@ -4,6 +4,7 @@ Author: Tim Holtermann (TU Dortmund, AG Apparatedesign)
 """
 
 import re
+from pathlib import Path
 
 
 def _generic_attributes(element):
@@ -185,10 +186,18 @@ def _resolve_graph_id(identifier, aliases):
     return resolved
 
 
+def _normalized_plot_path(path_plot):
+    path = Path(path_plot)
+    if path.suffix.lower() != ".png":
+        path = path.with_suffix(".png")
+    return str(path)
+
+
 def plot_graph(Path_graph, Path_plot):
     import networkx as nx
     import matplotlib.pyplot as plt
 
+    Path_plot = _normalized_plot_path(Path_plot)
     graph = nx.read_graphml(Path_graph)
     color = []
     width = []
@@ -247,6 +256,7 @@ def plot_graph(Path_graph, Path_plot):
         with_labels=True,
     )
     plot_graph.savefig(Path_plot)
+    plt.close(plot_graph)
 
 
 def plot_graph2(Path_graph, Path_plot):
@@ -254,6 +264,7 @@ def plot_graph2(Path_graph, Path_plot):
     import matplotlib.pyplot as plt
     import math
 
+    Path_plot = _normalized_plot_path(Path_plot)
     graph = nx.read_graphml(Path_graph)
     color = []
     width = []
@@ -335,6 +346,7 @@ def plot_graph2(Path_graph, Path_plot):
         font_weight="bold",
     )
     plot_graph.savefig(Path_plot)
+    plt.close(plot_graph)
 
 
 def Dexpi2graph(
