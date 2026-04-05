@@ -13,4 +13,5 @@ dependencies = [
     "pandas>=2.3.3",
     "pillow>=11.3.0",
     "pysimplegui>=4.60.5.1",
+    "pyparsing==3.3.0",
 ]
