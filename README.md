@@ -32,18 +32,29 @@ The converter is available as an application for Python.
 A application for Windows 10 will be available soon.
 
 ### Python installation
-1. Install Python (anaconda) from https://www.anaconda.com/products/individual
-2. Load the following python libraries
-	- [NetworkX](https://networkx.org/) (vers. 2.4) [2]
-	- [Matplotlib](https://matplotlib.org/) (vers. 3.2.2) [3]
-	- [Pandas](https://pandas.pydata.org/) (vers. 1.0.5) [4]
-	- [NLTK](https://www.nltk.org/) (vers. 3.5) [5]
-	- [Pillow](https://pillow.readthedocs.io/en/stable/) (vers. 7.2.0) [6]
-	- [PySimpleGUI](https://pysimplegui.readthedocs.io/en/latest/) (vers. 4.56.0) [7]
-	- [lxml](https://lxml.de/) (vers. 4.5.2) [8]
-    - [openpyxl]() (vers. 3.0.9) [9]
-3. Download the folder dexpi2graph_python.
-4. Running the script *dexpi2graphML.py* starts the converter.
+1. Using UV:
+	a. Clone this repo and run:
+		```
+		uv sync --upgrade
+		```
+	b. To run:
+		```
+		uv run dexpi2graph_python/dexpitographml.py
+		```
+
+2. Manual (from original author)
+	a. Install Python (anaconda) from https://www.anaconda.com/products/individual
+	b. Load the following python libraries
+		- [NetworkX](https://networkx.org/) (vers. 2.4) [2]
+		- [Matplotlib](https://matplotlib.org/) (vers. 3.2.2) [3]
+		- [Pandas](https://pandas.pydata.org/) (vers. 1.0.5) [4]
+		- [NLTK](https://www.nltk.org/) (vers. 3.5) [5]
+		- [Pillow](https://pillow.readthedocs.io/en/stable/) (vers. 7.2.0) [6]
+		- [PySimpleGUI](https://pysimplegui.readthedocs.io/en/latest/) (vers. 4.56.0) [7]
+		- [lxml](https://lxml.de/) (vers. 4.5.2) [8]
+	    - [openpyxl]() (vers. 3.0.9) [9]
+	c. Download the folder dexpi2graph_python.
+	d. Running the script *dexpi2graphML.py* starts the converter.
 
 ## How to Use:
 The *DEXPI2graphML  converter* consists a graphical user interface (GUI) shown in Figure 2.
