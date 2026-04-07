@@ -14,4 +14,5 @@ dependencies = [
     "pillow>=11.3.0",
     "pysimplegui>=4.60.5.1",
     "pyparsing==3.3.0",
+    "ezdxf>=1.4.2",
 ]
