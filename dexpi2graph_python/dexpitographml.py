@@ -120,7 +120,8 @@ while True:
                     str(OUTPUT_ERROR_DIR) + "/",
                     savename,
                 )
-                functions.plot_graph2(
+                functions.render_plot(
+                    str(xml_path),
                     str(OUTPUT_GRAPHML_COMPLETE_DIR / (savename + ".xml")),
                     str(OUTPUT_PLOTS_DIR / savename),
                 )

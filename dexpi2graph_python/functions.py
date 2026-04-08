@@ -205,6 +205,12 @@ def plot_graph2(Path_graph, Path_plot):
     render_graph_plot(Path_graph, Path_plot)
 
 
+def render_plot(Path_dexpi, Path_graph, Path_plot):
+    from dexpi_xml_renderer import render_dexpi_plot
+
+    render_dexpi_plot(Path_dexpi, Path_graph, Path_plot)
+
+
 def Dexpi2graph(
     DEXPI_path,
     save_path_graph,
