@@ -1,0 +1,47 @@
+{
+  "node_request": {
+    "PI": { "kind": "dxf", "file": "PI.dxf", "size": [10, 10] },
+    "PIC": { "kind": "dxf", "file": "PIC.dxf", "size": [10, 10] },
+    "PIT": { "kind": "dxf", "file": "PIT.dxf", "size": [10, 10] },
+    "PDI": { "kind": "dxf", "file": "PDI.dxf", "size": [10, 10] },
+    "PDAH": { "kind": "dxf", "file": "PDAH.dxf", "size": [10, 10] },
+    "TI": { "kind": "dxf", "file": "TI.dxf", "size": [10, 10] },
+    "TIT": { "kind": "dxf", "file": "TIT.dxf", "size": [10, 10] },
+    "TE": { "kind": "dxf", "file": "TE.dxf", "size": [10, 10] },
+    "LI": { "kind": "dxf", "file": "LIT.dxf", "size": [10, 10] },
+    "LIT": { "kind": "dxf", "file": "LIT.dxf", "size": [10, 10] },
+    "LY": { "kind": "dxf", "file": "LY_SQUARE.dxf", "size": [10, 10] },
+    "PY": { "kind": "dxf", "file": "PY.dxf", "size": [10, 10] },
+    "ZC": { "kind": "dxf", "file": "ZC.dxf", "size": [10, 10] }
+  },
+  "node_class": {
+    "Tank": { "kind": "dxf", "file": "SeperatorTank1.dxf", "size": [24, 18] },
+    "Vessel": { "kind": "dxf", "file": "SeperatorTank1.dxf", "size": [24, 18] },
+    "Column": { "kind": "column", "size": [18, 34] },
+    "Heat exchanger": { "kind": "heat_exchanger", "size": [22, 12] },
+    "Liquid pump": { "kind": "pump", "size": [16, 12] },
+    "Ball valve": { "kind": "dxf", "file": "ball_valve_open.dxf", "size": [10, 10] },
+    "Globe valve": { "kind": "dxf", "file": "globe_valve_open.dxf", "size": [10, 10] },
+    "Butterfly valve": { "kind": "dxf", "file": "butterfly_valve.dxf", "size": [10, 10] },
+    "Swing check valve": { "kind": "dxf", "file": "check_valve.dxf", "size": [10, 10] },
+    "Safety valve": { "kind": "dxf", "file": "globe_valve_with_flange_open.dxf", "size": [10, 10] },
+    "Flange": { "kind": "dxf", "file": "blind_flange.dxf", "size": [8, 8] },
+    "Pipe tee": { "kind": "tee", "size": [6, 6] },
+    "Pipe reducer": { "kind": "dxf", "file": "reducer_concentric.dxf", "size": [10, 8] },
+    "Orifice plate": { "kind": "dxf", "file": "orifice_plate.dxf", "size": [8, 8] },
+    "Valve (general)": { "kind": "dxf", "file": "hand_control_valve_open.dxf", "size": [10, 10] },
+    "Fittings": { "kind": "equipment", "size": [8, 8] },
+    "PCE Request": { "kind": "instrument", "size": [10, 10] },
+    "Flow in pipe connector symbol": { "kind": "dxf", "file": "inside_plant_sheet_connector.dxf", "size": [10, 8] },
+    "Flow out pipe connector symbol": { "kind": "dxf", "file": "inside_plant_sheet_connector_right.dxf", "size": [10, 8] }
+  },
+  "node_group": {
+    "Vessel": { "kind": "dxf", "file": "SeperatorTank1.dxf", "size": [24, 18] },
+    "Column": { "kind": "column", "size": [18, 34] },
+    "Heat exchanger": { "kind": "heat_exchanger", "size": [22, 12] },
+    "Pump": { "kind": "pump", "size": [16, 12] },
+    "Valves/Fittings": { "kind": "dxf", "file": "hand_control_valve_open.dxf", "size": [10, 10] },
+    "Connector": { "kind": "connector", "size": [10, 8] },
+    "MSR": { "kind": "instrument", "size": [10, 10] }
+  }
+}

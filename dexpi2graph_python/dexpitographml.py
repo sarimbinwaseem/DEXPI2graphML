@@ -26,6 +26,12 @@ if os.path.isfile(".folder_path"):
 else:
     saved_dexpi_path = ""
 
+
+def list_plot_files() -> list[str]:
+    return sorted(
+        path.name for path in OUTPUT_PLOTS_DIR.iterdir() if path.suffix.lower() == ".png"
+    )
+
 # Define window content
 col_left = [
     [psg.Text("Choose DEXPI - P&ID - folder...")],
@@ -45,7 +51,7 @@ col_left = [
 image_elem = psg.Image(
     size=(600, 450), key="plot_graph", visible=True, background_color="white"
 )
-list_elem = psg.Listbox(os.listdir(OUTPUT_PLOTS_DIR), key="selected_plot", size=(50, 5))
+list_elem = psg.Listbox(list_plot_files(), key="selected_plot", size=(50, 5))
 
 col_right = [
     [psg.Text("Plot")],
@@ -87,7 +93,7 @@ def save_path(path: str) -> None:
 # Display and interact with the Window using an Event Loop
 while True:
     event, values = window.read()
-    list_elem.update(os.listdir(OUTPUT_PLOTS_DIR))
+    list_elem.update(list_plot_files())
     if event == "Convert":
 
         dexpi_path = values["path_dexpi"]
@@ -118,7 +124,7 @@ while True:
                     str(OUTPUT_GRAPHML_COMPLETE_DIR / (savename + ".xml")),
                     str(OUTPUT_PLOTS_DIR / savename),
                 )
-        list_elem.update(os.listdir(OUTPUT_PLOTS_DIR))
+        list_elem.update(list_plot_files())
 
     ### Kasten auswahl einfügen
     if event == "show graphML P&ID in Explorer":
