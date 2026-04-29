@@ -16,6 +16,7 @@ import networkx as nx
 BASE_DIR = Path(__file__).resolve().parent.parent
 ASSET_DIR = BASE_DIR / "assets" / "dxf_components"
 MANIFEST_PATH = ASSET_DIR / "component_map.json"
+MIN_GEOMETRY_SIZE = 1e-6
 
 
 @dataclass(frozen=True)
@@ -57,17 +58,31 @@ def render_graph_plot(path_graph: str, path_plot_stem: str) -> None:
     _draw_edges(axis, graph, placed_nodes)
     axis.set_aspect("equal")
     axis.axis("off")
-    figure.savefig(stem.with_suffix(".png"), bbox_inches="tight", pad_inches=0.1)
-    figure.savefig(stem.with_suffix(".svg"), bbox_inches="tight", pad_inches=0.1)
+    figure.savefig(_output_file(stem, ".png"), bbox_inches="tight", pad_inches=0.1)
+    figure.savefig(_output_file(stem, ".svg"), bbox_inches="tight", pad_inches=0.1)
     plt.close(figure)
+
+
+def draw_visual_spec(
+    axis,
+    x: float,
+    y: float,
+    spec: VisualSpec,
+    rotation: float = 0.0,
+) -> BBox:
+    return _draw_symbol(axis, x, y, spec, rotation)
 
 
 def _normalized_output_stem(path_plot_stem: str) -> Path:
     path = Path(path_plot_stem)
-    if path.suffix:
+    if path.suffix.lower() in {".png", ".svg"}:
         path = path.with_suffix("")
     path.parent.mkdir(parents=True, exist_ok=True)
     return path
+
+
+def _output_file(stem: Path, extension: str) -> Path:
+    return Path(f"{stem}{extension}")
 
 
 def _build_figure(graph: nx.Graph):
@@ -177,12 +192,20 @@ def _draw_dxf_symbol(
     target_height: float,
     rotation: float,
 ) -> BBox:
-    source_width = max(geometry.bbox.width, 1.0)
-    source_height = max(geometry.bbox.height, 1.0)
-    scale = min(target_width / source_width, target_height / source_height)
+    source_width = max(geometry.bbox.width, MIN_GEOMETRY_SIZE)
+    source_height = max(geometry.bbox.height, MIN_GEOMETRY_SIZE)
     line_segments = []
     cos_r = math.cos(math.radians(rotation))
     sin_r = math.sin(math.radians(rotation))
+    effective_width = max(
+        source_width * abs(cos_r) + source_height * abs(sin_r),
+        MIN_GEOMETRY_SIZE,
+    )
+    effective_height = max(
+        source_width * abs(sin_r) + source_height * abs(cos_r),
+        MIN_GEOMETRY_SIZE,
+    )
+    scale = min(target_width / effective_width, target_height / effective_height)
 
     transformed_points = []
     for start, end in geometry.segments:
