@@ -16,6 +16,7 @@ SMALL_MODEL_SCALE = 5000.0
 DEFAULT_DPI = 100
 STUB_LENGTH_PX = 5.0
 MIN_RENDER_SIZE = 1e-6
+MIN_SYMBOL_PX = 24.0
 GRAPHICAL_TAGS = {
     "Drawing",
     "ShapeCatalogue",
@@ -272,18 +273,6 @@ def _extract_view_box(root) -> ViewBox:
 
 
 def _extract_proteus_view_box(root) -> ViewBox:
-    drawing_bounds = None
-    header = _find_child_local(root, "Header")
-    if header is not None:
-        drawing_bounds = _find_child_local(header, "DrawingBounds")
-    if drawing_bounds is not None:
-        return ViewBox(
-            _float_attr(drawing_bounds, "min_x"),
-            _float_attr(drawing_bounds, "min_y"),
-            _float_attr(drawing_bounds, "max_x"),
-            _float_attr(drawing_bounds, "max_y"),
-        )
-
     bounds = []
     for bbox in _iter_local(root, "GraphicBounds"):
         bounds.append(
@@ -294,29 +283,52 @@ def _extract_proteus_view_box(root) -> ViewBox:
                 _float_attr(bbox, "max_y"),
             )
         )
+    for pos in _iter_local(root, "Position"):
+        x = _float_attr(pos, "x")
+        y = _float_attr(pos, "y")
+        if x or y:
+            bounds.append((x, y, x, y))
     if not bounds:
         return ViewBox(0.0, 0.0, 1.0, 1.0)
     min_x = min(item[0] for item in bounds)
     min_y = min(item[1] for item in bounds)
     max_x = max(item[2] for item in bounds)
     max_y = max(item[3] for item in bounds)
-    return ViewBox(min_x, min_y, max_x, max_y)
+    pw = max((max_x - min_x) * 0.12, 1e-3)
+    ph = max((max_y - min_y) * 0.12, 1e-3)
+    return ViewBox(min_x - pw, min_y - ph, max_x + pw, max_y + ph)
 
 
 def _extract_xmplant_view_box(root) -> ViewBox:
-    drawing = _find_child_local(root, "Drawing")
-    if drawing is not None:
-        extent = _find_child_local(drawing, "Extent")
+    bounds = []
+    for comp in _iter_local(root, "PipingComponent"):
+        extent = _find_child_local(comp, "Extent")
         if extent is not None:
             min_node = _find_child_local(extent, "Min")
             max_node = _find_child_local(extent, "Max")
             if min_node is not None and max_node is not None:
-                return ViewBox(
+                bounds.append((
                     _float_attr(min_node, "X"),
                     _float_attr(min_node, "Y"),
                     _float_attr(max_node, "X"),
                     _float_attr(max_node, "Y"),
-                )
+                ))
+        else:
+            pos = _find_child_local(comp, "Position")
+            if pos is not None:
+                loc = _find_child_local(pos, "Location")
+                if loc is not None:
+                    x = _float_attr(loc, "X")
+                    y = _float_attr(loc, "Y")
+                    bounds.append((x, y, x, y))
+    if bounds:
+        min_x = min(item[0] for item in bounds)
+        min_y = min(item[1] for item in bounds)
+        max_x = max(item[2] for item in bounds)
+        max_y = max(item[3] for item in bounds)
+        pw = max((max_x - min_x) * 0.12, 1e-5)
+        ph = max((max_y - min_y) * 0.12, 1e-5)
+        return ViewBox(min_x - pw, min_y - ph, max_x + pw, max_y + ph)
     return _extract_view_box(root)
 
 
@@ -351,6 +363,20 @@ def _iter_render_elements(root):
                 stack.append(child)
 
 
+def _compute_definition_natural_size(
+    definition, transform: Transform, pixel_scale: float
+) -> tuple[float, float]:
+    xs, ys = [], []
+    for child in list(definition):
+        if child.tag in {"PolyLine", "CenterLine", "Shape"}:
+            for coord in child.findall("Coordinate"):
+                xs.append(_float_attr(coord, "X") * transform.sx * pixel_scale)
+                ys.append(_float_attr(coord, "Y") * transform.sy * pixel_scale)
+    if not xs:
+        return (0.0, 0.0)
+    return (max(xs) - min(xs), max(ys) - min(ys))
+
+
 def _draw_catalogue_definition(
     axis,
     definition,
@@ -358,6 +384,17 @@ def _draw_catalogue_definition(
     view_box: ViewBox,
     pixel_scale: float,
 ) -> None:
+    w, h = _compute_definition_natural_size(definition, transform, pixel_scale)
+    max_dim = max(w, h)
+    if 0.0 < max_dim < MIN_SYMBOL_PX:
+        scale_factor = MIN_SYMBOL_PX / max_dim
+        transform = Transform(
+            tx=transform.tx,
+            ty=transform.ty,
+            rotation_deg=transform.rotation_deg,
+            sx=transform.sx * scale_factor,
+            sy=transform.sy * scale_factor,
+        )
     for child in list(definition):
         if child.tag in PRIMITIVE_TAGS:
             _draw_primitive(axis, child, view_box, pixel_scale, transform=transform)
@@ -408,7 +445,8 @@ def _draw_primitive(
     if primitive.tag == "Circle":
         style = _style_from_presentation(primitive.find("Presentation"), pixel_scale)
         center = _circle_center(primitive, transform)
-        radius = _float_attr(primitive, "Radius") * pixel_scale
+        scale = math.sqrt(transform.sx * transform.sy) if transform is not None else 1.0
+        radius = _float_attr(primitive, "Radius") * pixel_scale * scale
         axis.add_patch(
             Circle(
                 _to_canvas(center[0], center[1], view_box, pixel_scale),
@@ -543,7 +581,7 @@ def _draw_proteus_component(axis, component, view_box: ViewBox, pixel_scale: flo
 
     spec = _resolve_proteus_visual_spec(component, bbox)
     if spec is not None:
-        drawn_bbox = draw_visual_spec(axis, center_x, center_y, spec, rotation)
+        drawn_bbox = draw_visual_spec(axis, center_x, center_y, spec, rotation, flip_y=True)
     else:
         drawn_bbox = _draw_rotated_bbox_fallback(axis, bbox, rotation)
 
@@ -560,7 +598,7 @@ def _draw_xmplant_component(axis, component, view_box: ViewBox, pixel_scale: flo
 
     spec = _resolve_xmplant_visual_spec(component, bbox)
     if spec is not None:
-        drawn_bbox = draw_visual_spec(axis, center_x, center_y, spec, rotation)
+        drawn_bbox = draw_visual_spec(axis, center_x, center_y, spec, rotation, flip_y=True)
     else:
         drawn_bbox = _draw_rotated_bbox_fallback(axis, bbox, rotation)
 
@@ -630,8 +668,8 @@ def _resolve_proteus_visual_spec(component, bbox: BBox) -> VisualSpec | None:
 
     return VisualSpec(
         "dxf",
-        max(bbox.width, MIN_RENDER_SIZE),
-        max(bbox.height, MIN_RENDER_SIZE),
+        max(bbox.width, MIN_SYMBOL_PX),
+        max(bbox.height, MIN_SYMBOL_PX),
         file_name,
     )
 
@@ -658,8 +696,8 @@ def _resolve_xmplant_visual_spec(component, bbox: BBox) -> VisualSpec | None:
 
     return VisualSpec(
         "dxf",
-        max(bbox.width, MIN_RENDER_SIZE),
-        max(bbox.height, MIN_RENDER_SIZE),
+        max(bbox.width, MIN_SYMBOL_PX),
+        max(bbox.height, MIN_SYMBOL_PX),
         file_name,
     )
 

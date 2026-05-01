@@ -17,6 +17,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 ASSET_DIR = BASE_DIR / "assets" / "dxf_components"
 MANIFEST_PATH = ASSET_DIR / "component_map.json"
 MIN_GEOMETRY_SIZE = 1e-6
+MIN_RENDERED_PX = 20.0
 
 
 @dataclass(frozen=True)
@@ -69,8 +70,9 @@ def draw_visual_spec(
     y: float,
     spec: VisualSpec,
     rotation: float = 0.0,
+    flip_y: bool = False,
 ) -> BBox:
-    return _draw_symbol(axis, x, y, spec, rotation)
+    return _draw_symbol(axis, x, y, spec, rotation, flip_y)
 
 
 def _normalized_output_stem(path_plot_stem: str) -> Path:
@@ -175,11 +177,11 @@ def _resolve_rotation(node: str, graph: nx.Graph, positions, spec: VisualSpec) -
     return 0.0
 
 
-def _draw_symbol(axis, x: float, y: float, spec: VisualSpec, rotation: float) -> BBox:
+def _draw_symbol(axis, x: float, y: float, spec: VisualSpec, rotation: float, flip_y: bool = False) -> BBox:
     if spec.kind == "dxf" and spec.file_name:
         geometry = _load_symbol_geometry(spec.file_name)
         if geometry is not None:
-            return _draw_dxf_symbol(axis, geometry, x, y, spec.width, spec.height, rotation)
+            return _draw_dxf_symbol(axis, geometry, x, y, spec.width, spec.height, rotation, flip_y)
     return _draw_primitive(axis, spec, x, y, rotation)
 
 
@@ -191,6 +193,7 @@ def _draw_dxf_symbol(
     target_width: float,
     target_height: float,
     rotation: float,
+    flip_y: bool = False,
 ) -> BBox:
     source_width = max(geometry.bbox.width, MIN_GEOMETRY_SIZE)
     source_height = max(geometry.bbox.height, MIN_GEOMETRY_SIZE)
@@ -206,6 +209,9 @@ def _draw_dxf_symbol(
         MIN_GEOMETRY_SIZE,
     )
     scale = min(target_width / effective_width, target_height / effective_height)
+    min_dim = min(effective_width, effective_height)
+    if min_dim > MIN_GEOMETRY_SIZE:
+        scale = max(scale, MIN_RENDERED_PX / min_dim)
 
     transformed_points = []
     for start, end in geometry.segments:
@@ -213,6 +219,8 @@ def _draw_dxf_symbol(
         for px, py in (start, end):
             local_x = (px - geometry.center[0]) * scale
             local_y = (py - geometry.center[1]) * scale
+            if flip_y:
+                local_y = -local_y
             rot_x = local_x * cos_r - local_y * sin_r
             rot_y = local_x * sin_r + local_y * cos_r
             world_point = (x + rot_x, y + rot_y)
