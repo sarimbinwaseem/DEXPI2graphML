@@ -12,6 +12,7 @@ from matplotlib.patches import Circle, Polygon
 
 from dxf_renderer import ASSET_DIR, BBox, VisualSpec, draw_visual_spec, render_graph_plot
 
+TEXT_DISTANCE_FROM_PIPE = 10
 SMALL_MODEL_SCALE = 5000.0
 DEFAULT_DPI = 100
 STUB_LENGTH_PX = 5.0
@@ -531,10 +532,9 @@ def _draw_proteus_segment(
 
     nominal_diameter = segment.get("nominalDiameter", "")
     if nominal_diameter:
-        mid_x = (start_point[0] + end_point[0]) / 2.0
-        mid_y = (start_point[1] + end_point[1]) / 2.0
+        mid_x, mid_y = _label_point_for_path(points)
         axis.text(
-            mid_x, mid_y + 6,
+            mid_x, mid_y + TEXT_DISTANCE_FROM_PIPE,
             nominal_diameter,
             fontsize=7,
             color=style["color"],
@@ -800,7 +800,7 @@ def _proteus_segment_style(layer_name: str):
     if "signal" in normalized:
         return {"color": "#444444", "linewidth": 1.0, "linestyle": "--"}
     if "instrument" in normalized:
-        return {"color": "#666666", "linewidth": 1.0, "linestyle": "--"}
+        return {"color": "#777777", "linewidth": 1.0, "linestyle": "--"}
     if "off_page" in normalized:
         return {"color": "#222222", "linewidth": 1.4, "linestyle": "-"}
     return {"color": "#222222", "linewidth": 1.8, "linestyle": "-"}
@@ -892,8 +892,7 @@ def _draw_xmplant_segment(axis, segment, bbox_map) -> None:
 
     nominal_diameter = _xmplant_segment_attr(segment, "NOMINAL_DIAMETER")
     if nominal_diameter:
-        mid_x = (start[0] + end[0]) / 2.0
-        mid_y = (start[1] + end[1]) / 2.0
+        mid_x, mid_y = _label_point_for_path(points)
         axis.text(
             mid_x, mid_y + 6,
             nominal_diameter,
@@ -962,6 +961,19 @@ def _orthogonal_route(
 
     bend = (ex, sy)
     return [start, bend, end]
+
+
+def _label_point_for_path(points: list[tuple[float, float]]) -> tuple[float, float]:
+    best_len = -1.0
+    best_mid = points[0]
+    for i in range(len(points) - 1):
+        x1, y1 = points[i]
+        x2, y2 = points[i + 1]
+        length = math.hypot(x2 - x1, y2 - y1)
+        if length > best_len:
+            best_len = length
+            best_mid = ((x1 + x2) / 2.0, (y1 + y2) / 2.0)
+    return best_mid
 
 
 def _xmplant_segment_style(segment):
