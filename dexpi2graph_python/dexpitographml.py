@@ -104,6 +104,8 @@ while True:
         else:
             dexpi_root = Path(dexpi_path)
             save_path(dexpi_path)
+            print()
+            print()
             print("Open Directory:", dexpi_root)
             print("Start Conversion of DEXPI files into GraphML...")
 

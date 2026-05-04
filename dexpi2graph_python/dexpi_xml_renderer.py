@@ -529,6 +529,20 @@ def _draw_proteus_segment(
         zorder=1,
     )
 
+    nominal_diameter = segment.get("nominalDiameter", "")
+    if nominal_diameter:
+        mid_x = (start_point[0] + end_point[0]) / 2.0
+        mid_y = (start_point[1] + end_point[1]) / 2.0
+        axis.text(
+            mid_x, mid_y + 6,
+            nominal_diameter,
+            fontsize=7,
+            color=style["color"],
+            ha="center",
+            va="top",
+            zorder=3,
+        )
+
 
 def _resolve_port_anchor(
     axis,
@@ -875,6 +889,20 @@ def _draw_xmplant_segment(axis, segment, bbox_map) -> None:
         solid_capstyle="round",
         zorder=1,
     )
+
+    nominal_diameter = _xmplant_segment_attr(segment, "NOMINAL_DIAMETER")
+    if nominal_diameter:
+        mid_x = (start[0] + end[0]) / 2.0
+        mid_y = (start[1] + end[1]) / 2.0
+        axis.text(
+            mid_x, mid_y + 6,
+            nominal_diameter,
+            fontsize=7,
+            color=style["color"],
+            ha="center",
+            va="top",
+            zorder=3,
+        )
 
 
 def _build_port_map(components: dict, view_box: ViewBox, pixel_scale: float) -> dict:
