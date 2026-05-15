@@ -187,9 +187,21 @@ def _render_proteusxml(root, output_stem: Path, use_block_names: bool = False) -
         if component_id
     }
     port_map = _build_port_map(components, view_box, pixel_scale)
+    arrowhead_rotations: dict = {}
+    for cid, comp in components.items():
+        if _component_is_arrowhead([
+            comp.get("blockName", ""),
+            comp.get("componentName", ""),
+            comp.get("componentClass", ""),
+            comp.get("componentSubType", ""),
+            _proteus_generic_attribute(comp, "SOURCE_SYMBOL"),
+            _proteus_generic_attribute(comp, "SOURCE_SYMBOL_RAW"),
+        ]):
+            pos = _find_child_local(comp, "Position")
+            arrowhead_rotations[cid] = -_float_attr(pos, "rotation") if pos is not None else 0.0
 
     for segment in _iter_local(root, "PipeSegment"):
-        _draw_proteus_segment(axis, segment, view_box, pixel_scale, bbox_map, port_map)
+        _draw_proteus_segment(axis, segment, view_box, pixel_scale, bbox_map, port_map, arrowhead_rotations)
 
     for component in components.values():
         _draw_proteus_component(axis, component, view_box, pixel_scale, use_block_names)
@@ -209,9 +221,20 @@ def _render_xmplant_bbox(root, output_stem: Path, use_block_names: bool = False)
         for component_id, component in components.items()
         if component_id
     }
+    arrowhead_rotations: dict = {}
+    for cid, comp in components.items():
+        if _component_is_arrowhead([
+            comp.get("ComponentName", ""),
+            comp.get("ComponentClass", ""),
+            _xmplant_generic_attribute(comp, "SOURCE_SYMBOL"),
+            _xmplant_generic_attribute(comp, "SOURCE_SYMBOL_RAW"),
+            _xmplant_generic_attribute(comp, "DXF_BLOCK_NAME"),
+            _xmplant_generic_attribute(comp, "SUB_CLASS"),
+        ]):
+            arrowhead_rotations[cid] = -_xmplant_rotation(comp)
 
     for segment in _iter_local(root, "PipingNetworkSegment"):
-        _draw_xmplant_segment(axis, segment, bbox_map)
+        _draw_xmplant_segment(axis, segment, bbox_map, arrowhead_rotations)
 
     for component in components.values():
         _draw_xmplant_component(axis, component, view_box, pixel_scale, use_block_names)
@@ -495,7 +518,7 @@ def _draw_primitive(
 
 
 def _draw_proteus_segment(
-    axis, segment, view_box: ViewBox, pixel_scale: float, bbox_map, port_map=None
+    axis, segment, view_box: ViewBox, pixel_scale: float, bbox_map, port_map=None, arrowhead_rotations=None
 ) -> None:
     start_xml = _find_child_local(segment, "Start")
     end_xml = _find_child_local(segment, "End")
@@ -514,15 +537,21 @@ def _draw_proteus_segment(
 
     style = _proteus_segment_style(segment.get("layer", ""))
 
+    _ar = arrowhead_rotations or {}
+    start_rot = _ar.get(start_id)
+    end_rot = _ar.get(end_id)
+
     # Use the opposite endpoint as the "facing" reference so we pick the correct port
     start_point = _resolve_port_anchor(
-        axis, start_id, start_box, seg_ex, seg_ey, port_map, style
+        axis, start_id, start_box, seg_ex, seg_ey, port_map, style,
+        arrowhead_rotation=start_rot,
     )
     end_point = _resolve_port_anchor(
-        axis, end_id, end_box, seg_sx, seg_sy, port_map, style
+        axis, end_id, end_box, seg_sx, seg_sy, port_map, style,
+        arrowhead_rotation=end_rot,
     )
 
-    points = _orthogonal_route(start_point, end_point)
+    points = _orthogonal_route(start_point, end_point, vertical_first=_arrowhead_arrival_vertical_first(end_rot))
     axis.plot(
         [point[0] for point in points],
         [point[1] for point in points],
@@ -555,6 +584,7 @@ def _resolve_port_anchor(
     target_y: float,
     port_map,
     style: dict,
+    arrowhead_rotation: float | None = None,
 ) -> tuple[float, float]:
     """Return the connection anchor for a component, drawing a stub when a port is found."""
     if port_map is not None:
@@ -574,6 +604,8 @@ def _resolve_port_anchor(
             return stub_tip
 
     if bbox is not None:
+        if arrowhead_rotation is not None:
+            return _resolve_arrowhead_anchor(axis, bbox, arrowhead_rotation, target_x, target_y, style)
         cx = (bbox.left + bbox.right) / 2.0
         cy = (bbox.top + bbox.bottom) / 2.0
         dx = target_x - cx
@@ -596,6 +628,24 @@ def _draw_proteus_component(axis, component, view_box: ViewBox, pixel_scale: flo
     center_y = (bbox.top + bbox.bottom) / 2.0
     rotation = -_float_attr(position, "rotation") if position is not None else 0.0
 
+    # If the DXF INSERT point is at the far edge of the bbox, the source block's geometry
+    # extended in the opposite direction — a mirror not stored as a rotation angle.
+    # Compare raw XML world coordinates to avoid canvas Y-inversion confusion.
+    if position is not None and bbox_element is not None:
+        pos_x = _float_attr(position, "x")
+        raw_min_x = _float_attr(bbox_element, "min_x")
+        raw_max_x = _float_attr(bbox_element, "max_x")
+        w = raw_max_x - raw_min_x
+        if w > 1e-9 and (pos_x - raw_min_x) / w > 0.75:
+            rotation += 180.0
+
+        pos_y = _float_attr(position, "y")
+        raw_min_y = _float_attr(bbox_element, "min_y")
+        raw_max_y = _float_attr(bbox_element, "max_y")
+        h = raw_max_y - raw_min_y
+        if h > 1e-9 and (pos_y - raw_min_y) / h > 0.75:
+            rotation += 180.0
+
     spec = _resolve_proteus_visual_spec(component, bbox)
     if spec is not None:
         drawn_bbox = draw_visual_spec(axis, center_x, center_y, spec, rotation, flip_y=True)
@@ -612,6 +662,31 @@ def _draw_xmplant_component(axis, component, view_box: ViewBox, pixel_scale: flo
     center_x = (bbox.left + bbox.right) / 2.0
     center_y = (bbox.top + bbox.bottom) / 2.0
     rotation = -_xmplant_rotation(component)
+
+    # Detect mirrored geometry: INSERT at far edge of bbox means geometry extended the other way.
+    # ORIGINAL_DXF_X/Y are in the same normalized coordinate space as Extent Min/Max.
+    extent = _find_child_local(component, "Extent")
+    if extent is not None:
+        min_node = _find_child_local(extent, "Min")
+        max_node = _find_child_local(extent, "Max")
+        if min_node is not None and max_node is not None:
+            orig_x_str = _xmplant_generic_attribute(component, "ORIGINAL_DXF_X")
+            if orig_x_str:
+                orig_x = float(str(orig_x_str).replace(",", "."))
+                xmin = _float_attr(min_node, "X")
+                xmax = _float_attr(max_node, "X")
+                w = xmax - xmin
+                if w > 1e-9 and (orig_x - xmin) / w > 0.75:
+                    rotation += 180.0
+
+            orig_y_str = _xmplant_generic_attribute(component, "ORIGINAL_DXF_Y")
+            if orig_y_str:
+                orig_y = float(str(orig_y_str).replace(",", "."))
+                ymin = _float_attr(min_node, "Y")
+                ymax = _float_attr(max_node, "Y")
+                h = ymax - ymin
+                if h > 1e-9 and (orig_y - ymin) / h > 0.75:
+                    rotation += 180.0
 
     spec = _resolve_xmplant_visual_spec(component, bbox)
     if spec is not None:
@@ -877,7 +952,7 @@ def _xmplant_rotation(component) -> float:
     return 0.0
 
 
-def _draw_xmplant_segment(axis, segment, bbox_map) -> None:
+def _draw_xmplant_segment(axis, segment, bbox_map, arrowhead_rotations=None) -> None:
     connection = _find_child_local(segment, "Connection")
     if connection is None:
         return
@@ -889,10 +964,26 @@ def _draw_xmplant_segment(axis, segment, bbox_map) -> None:
     if from_box is None or to_box is None:
         return
 
-    start = _bbox_anchor(from_box, to_box)
-    end = _bbox_anchor(to_box, from_box)
-    points = _orthogonal_route(start, end)
+    _ar = arrowhead_rotations or {}
+    from_rot = _ar.get(from_id)
+    to_rot = _ar.get(to_id)
+
     style = _xmplant_segment_style(segment)
+
+    to_cx = (to_box.left + to_box.right) / 2.0
+    to_cy = (to_box.top + to_box.bottom) / 2.0
+    fr_cx = (from_box.left + from_box.right) / 2.0
+    fr_cy = (from_box.top + from_box.bottom) / 2.0
+
+    start = (
+        _resolve_arrowhead_anchor(axis, from_box, from_rot, to_cx, to_cy, style)
+        if from_rot is not None else _bbox_anchor(from_box, to_box)
+    )
+    end = (
+        _resolve_arrowhead_anchor(axis, to_box, to_rot, fr_cx, fr_cy, style)
+        if to_rot is not None else _bbox_anchor(to_box, from_box)
+    )
+    points = _orthogonal_route(start, end, vertical_first=_arrowhead_arrival_vertical_first(to_rot))
     axis.plot(
         [point[0] for point in points],
         [point[1] for point in points],
@@ -951,6 +1042,82 @@ def _stub_endpoint(port_x: float, port_y: float, bbox: BBox) -> tuple[float, flo
     return port_x + dx / dist * length, port_y + dy / dist * length
 
 
+def _component_is_arrowhead(candidates: list[str]) -> bool:
+    """Return True if any candidate string suggests a pipe-flow arrowhead symbol."""
+    for c in candidates:
+        n = _normalize_key(c)
+        if "arrow" in n or "pipe_flow" in n or "flow_arrow" in n:
+            return True
+    return False
+
+
+def _arrowhead_anchor(
+    bbox: "BBox", rotation_deg: float, target_x: float, target_y: float
+) -> tuple[float, float]:
+    """Return whichever of tip or base is closer to (target_x, target_y)."""
+    cx = (bbox.left + bbox.right) / 2.0
+    cy = (bbox.top + bbox.bottom) / 2.0
+    cos_a = math.cos(math.radians(rotation_deg))
+    sin_a = math.sin(math.radians(rotation_deg))
+    half = (abs(cos_a) * bbox.width + abs(sin_a) * bbox.height) / 2.0
+    tip = (cx + cos_a * half, cy + sin_a * half)
+    base = (cx - cos_a * half, cy - sin_a * half)
+    d_tip = (tip[0] - target_x) ** 2 + (tip[1] - target_y) ** 2
+    d_base = (base[0] - target_x) ** 2 + (base[1] - target_y) ** 2
+    return tip if d_tip < d_base else base
+
+
+def _resolve_arrowhead_anchor(
+    axis,
+    bbox: "BBox",
+    rotation_deg: float,
+    target_x: float,
+    target_y: float,
+    style: dict,
+) -> tuple[float, float]:
+    """Pick tip or base (whichever is closer to target), draw a stub extending outward, return stub end."""
+    cx = (bbox.left + bbox.right) / 2.0
+    cy = (bbox.top + bbox.bottom) / 2.0
+    cos_a = math.cos(math.radians(rotation_deg))
+    sin_a = math.sin(math.radians(rotation_deg))
+    half = (abs(cos_a) * bbox.width + abs(sin_a) * bbox.height) / 2.0
+
+    tip  = (cx + cos_a * half, cy + sin_a * half)
+    base = (cx - cos_a * half, cy - sin_a * half)
+    d_tip  = (tip[0]  - target_x) ** 2 + (tip[1]  - target_y) ** 2
+    d_base = (base[0] - target_x) ** 2 + (base[1] - target_y) ** 2
+
+    if d_tip < d_base:
+        face = tip
+        stub_dir = (cos_a, sin_a)
+    else:
+        face = base
+        stub_dir = (-cos_a, -sin_a)
+
+    stub_len = max(STUB_LENGTH_PX, max(bbox.width, bbox.height) * 0.3)
+    stub_end = (face[0] + stub_dir[0] * stub_len, face[1] + stub_dir[1] * stub_len)
+
+    axis.plot(
+        [face[0], stub_end[0]],
+        [face[1], stub_end[1]],
+        color=style["color"],
+        linewidth=style["linewidth"],
+        linestyle="-",
+        solid_capstyle="round",
+        zorder=2,
+    )
+    return stub_end
+
+
+def _arrowhead_arrival_vertical_first(rotation_deg: float | None) -> bool:
+    """True when the arrow is more horizontal — route vertical-first to arrive along the arrow axis."""
+    if rotation_deg is None:
+        return False
+    cos_a = math.cos(math.radians(rotation_deg))
+    sin_a = math.sin(math.radians(rotation_deg))
+    return abs(cos_a) > abs(sin_a)
+
+
 def _bbox_anchor(box: BBox, other: BBox) -> tuple[float, float]:
     cx = (box.left + box.right) / 2.0
     cy = (box.top + box.bottom) / 2.0
@@ -966,13 +1133,15 @@ def _bbox_anchor(box: BBox, other: BBox) -> tuple[float, float]:
 def _orthogonal_route(
     start: tuple[float, float],
     end: tuple[float, float],
+    vertical_first: bool = False,
 ) -> list[tuple[float, float]]:
     sx, sy = start
     ex, ey = end
     if math.isclose(sx, ex, abs_tol=0.1) or math.isclose(sy, ey, abs_tol=0.1):
         return [start, end]
 
-    bend = (ex, sy)
+    # vertical_first: go down/up to match end Y, then horizontal — arrives at end horizontally
+    bend = (sx, ey) if vertical_first else (ex, sy)
     return [start, bend, end]
 
 
