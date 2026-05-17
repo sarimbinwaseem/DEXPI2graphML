@@ -177,11 +177,15 @@ def _resolve_rotation(node: str, graph: nx.Graph, positions, spec: VisualSpec) -
     return 0.0
 
 
-def _draw_symbol(axis, x: float, y: float, spec: VisualSpec, rotation: float, flip_y: bool = False) -> BBox:
+def _draw_symbol(
+    axis, x: float, y: float, spec: VisualSpec, rotation: float, flip_y: bool = False
+) -> BBox:
     if spec.kind == "dxf" and spec.file_name:
         geometry = _load_symbol_geometry(spec.file_name)
         if geometry is not None:
-            return _draw_dxf_symbol(axis, geometry, x, y, spec.width, spec.height, rotation, flip_y)
+            return _draw_dxf_symbol(
+                axis, geometry, x, y, spec.width, spec.height, rotation, flip_y
+            )
     return _draw_primitive(axis, spec, x, y, rotation)
 
 
@@ -246,32 +250,93 @@ def _draw_dxf_symbol(
     )
 
 
-def _draw_primitive(axis, spec: VisualSpec, x: float, y: float, rotation: float) -> BBox:
+def _draw_primitive(
+    axis, spec: VisualSpec, x: float, y: float, rotation: float
+) -> BBox:
     half_w = spec.width / 2.0
     half_h = spec.height / 2.0
 
     if spec.kind == "instrument":
-        axis.add_patch(Circle((x, y), radius=half_w, fill=False, linewidth=1.3, zorder=3))
+        axis.add_patch(
+            Circle((x, y), radius=half_w, fill=False, linewidth=1.3, zorder=3)
+        )
     elif spec.kind == "connector":
         points = [(x - half_w, y - half_h), (x - half_w, y + half_h), (x + half_w, y)]
         axis.add_patch(Polygon(points, fill=False, linewidth=1.3, zorder=3))
     elif spec.kind == "tee":
-        axis.add_patch(Rectangle((x - 1.2, y - 1.2), 2.4, 2.4, fill=True, color="black", zorder=3))
+        axis.add_patch(
+            Rectangle((x - 1.2, y - 1.2), 2.4, 2.4, fill=True, color="black", zorder=3)
+        )
         return BBox(x - 1.2, x + 1.2, y - 1.2, y + 1.2)
     elif spec.kind == "pump":
-        axis.add_patch(Circle((x, y), radius=min(half_w, half_h), fill=False, linewidth=1.3, zorder=3))
-        axis.plot([x - half_w, x + half_w], [y, y], color="black", linewidth=1.0, zorder=3)
-        axis.plot([x + half_w * 0.2, x + half_w], [y, y + half_h * 0.45], color="black", linewidth=1.0, zorder=3)
+        axis.add_patch(
+            Circle(
+                (x, y), radius=min(half_w, half_h), fill=False, linewidth=1.3, zorder=3
+            )
+        )
+        axis.plot(
+            [x - half_w, x + half_w], [y, y], color="black", linewidth=1.0, zorder=3
+        )
+        axis.plot(
+            [x + half_w * 0.2, x + half_w],
+            [y, y + half_h * 0.45],
+            color="black",
+            linewidth=1.0,
+            zorder=3,
+        )
     elif spec.kind == "heat_exchanger":
-        axis.add_patch(Rectangle((x - half_w, y - half_h), spec.width, spec.height, fill=False, linewidth=1.3, zorder=3))
-        axis.plot([x - half_w, x + half_w], [y - half_h, y + half_h], color="black", linewidth=1.0, zorder=3)
-        axis.plot([x - half_w, x + half_w], [y + half_h, y - half_h], color="black", linewidth=1.0, zorder=3)
+        axis.add_patch(
+            Rectangle(
+                (x - half_w, y - half_h),
+                spec.width,
+                spec.height,
+                fill=False,
+                linewidth=1.3,
+                zorder=3,
+            )
+        )
+        axis.plot(
+            [x - half_w, x + half_w],
+            [y - half_h, y + half_h],
+            color="black",
+            linewidth=1.0,
+            zorder=3,
+        )
+        axis.plot(
+            [x - half_w, x + half_w],
+            [y + half_h, y - half_h],
+            color="black",
+            linewidth=1.0,
+            zorder=3,
+        )
     elif spec.kind == "column":
-        axis.add_patch(Rectangle((x - half_w, y - half_h), spec.width, spec.height, fill=False, linewidth=1.3, zorder=3))
-        axis.add_patch(Circle((x, y + half_h), radius=half_w, fill=False, linewidth=1.0, zorder=3))
-        axis.add_patch(Circle((x, y - half_h), radius=half_w, fill=False, linewidth=1.0, zorder=3))
+        axis.add_patch(
+            Rectangle(
+                (x - half_w, y - half_h),
+                spec.width,
+                spec.height,
+                fill=False,
+                linewidth=1.3,
+                zorder=3,
+            )
+        )
+        axis.add_patch(
+            Circle((x, y + half_h), radius=half_w, fill=False, linewidth=1.0, zorder=3)
+        )
+        axis.add_patch(
+            Circle((x, y - half_h), radius=half_w, fill=False, linewidth=1.0, zorder=3)
+        )
     else:
-        axis.add_patch(Rectangle((x - half_w, y - half_h), spec.width, spec.height, fill=False, linewidth=1.3, zorder=3))
+        axis.add_patch(
+            Rectangle(
+                (x - half_w, y - half_h),
+                spec.width,
+                spec.height,
+                fill=False,
+                linewidth=1.3,
+                zorder=3,
+            )
+        )
 
     return BBox(x - half_w, x + half_w, y - half_h, y + half_h)
 
@@ -308,7 +373,9 @@ def _route_edge(start, end, start_box: BBox, end_box: BBox):
     if valid_vh and not valid_hv:
         return [start_anchor, bend_vh, end_anchor]
 
-    length_hv = abs(end_anchor[0] - start_anchor[0]) + abs(end_anchor[1] - start_anchor[1])
+    length_hv = abs(end_anchor[0] - start_anchor[0]) + abs(
+        end_anchor[1] - start_anchor[1]
+    )
     length_vh = length_hv
     if valid_hv and valid_vh:
         if length_hv <= length_vh:
@@ -317,7 +384,12 @@ def _route_edge(start, end, start_box: BBox, end_box: BBox):
 
     if abs(end_anchor[0] - start_anchor[0]) >= abs(end_anchor[1] - start_anchor[1]):
         mid_x = (start_anchor[0] + end_anchor[0]) / 2.0
-        return [start_anchor, (mid_x, start_anchor[1]), (mid_x, end_anchor[1]), end_anchor]
+        return [
+            start_anchor,
+            (mid_x, start_anchor[1]),
+            (mid_x, end_anchor[1]),
+            end_anchor,
+        ]
     mid_y = (start_anchor[1] + end_anchor[1]) / 2.0
     return [start_anchor, (start_anchor[0], mid_y), (end_anchor[0], mid_y), end_anchor]
 
@@ -435,7 +507,9 @@ def _collect_segments(entity, segments):
         return
 
     if entity_type == "LWPOLYLINE":
-        points = [(float(point[0]), float(point[1])) for point in entity.get_points("xy")]
+        points = [
+            (float(point[0]), float(point[1])) for point in entity.get_points("xy")
+        ]
         _points_to_segments(points, bool(entity.closed), segments)
         return
 
@@ -469,7 +543,9 @@ def _collect_segments(entity, segments):
 
     if entity_type == "ELLIPSE":
         try:
-            points = [(float(point.x), float(point.y)) for point in entity.flattening(0.5)]
+            points = [
+                (float(point.x), float(point.y)) for point in entity.flattening(0.5)
+            ]
             _points_to_segments(points, False, segments)
         except Exception:
             return
@@ -477,7 +553,9 @@ def _collect_segments(entity, segments):
 
     if entity_type == "SPLINE":
         try:
-            points = [(float(point.x), float(point.y)) for point in entity.flattening(0.5)]
+            points = [
+                (float(point.x), float(point.y)) for point in entity.flattening(0.5)
+            ]
             _points_to_segments(points, False, segments)
         except Exception:
             return

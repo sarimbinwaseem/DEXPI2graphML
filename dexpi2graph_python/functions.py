@@ -208,7 +208,9 @@ def plot_graph2(Path_graph, Path_plot):
 def render_plot(Path_dexpi, Path_graph, Path_plot, include_xmplant: bool = False):
     from dexpi_xml_renderer import render_dexpi_plot
 
-    render_dexpi_plot(Path_dexpi, Path_graph, Path_plot, include_xmplant=include_xmplant)
+    render_dexpi_plot(
+        Path_dexpi, Path_graph, Path_plot, include_xmplant=include_xmplant
+    )
 
 
 def Dexpi2graph(
@@ -975,7 +977,7 @@ def Dexpi2graph(
     node_sub_class = nx.get_node_attributes(graph, "node_sub_class")
     edge_class = nx.get_edge_attributes(graph, "edge_class")
     remove = []
-    nodes_problem = [] 
+    nodes_problem = []
     pipe_attributes = {
         "Piping with conduit": {"Insulation": "No", "Heated/cooled": "No"},
         "Piping insulated": {"Insulation": "Yes", "Heated/cooled": "No"},

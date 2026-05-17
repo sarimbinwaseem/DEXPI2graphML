@@ -10,7 +10,13 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, Polygon
 
-from dxf_renderer import ASSET_DIR, BBox, VisualSpec, draw_visual_spec, render_graph_plot
+from dxf_renderer import (
+    ASSET_DIR,
+    BBox,
+    VisualSpec,
+    draw_visual_spec,
+    render_graph_plot,
+)
 
 TEXT_DISTANCE_FROM_PIPE = 10
 SMALL_MODEL_SCALE = 5000.0
@@ -187,7 +193,10 @@ def _render_proteusxml(root, output_stem: Path, use_block_names: bool = False) -
     figure, axis = _build_figure(view_box, pixel_scale)
     axis.set_facecolor("white")
 
-    components = {component.get("id", ""): component for component in _iter_local(root, "Component")}
+    components = {
+        component.get("id", ""): component
+        for component in _iter_local(root, "Component")
+    }
     bbox_map = {
         component_id: _bbox_from_proteus_element(component, view_box, pixel_scale)
         for component_id, component in components.items()
@@ -196,27 +205,40 @@ def _render_proteusxml(root, output_stem: Path, use_block_names: bool = False) -
     port_map = _build_port_map(components, view_box, pixel_scale)
     arrowhead_rotations: dict = {}
     for cid, comp in components.items():
-        if _component_is_arrowhead([
-            comp.get("blockName", ""),
-            comp.get("componentName", ""),
-            comp.get("componentClass", ""),
-            comp.get("componentSubType", ""),
-            _proteus_generic_attribute(comp, "SOURCE_SYMBOL"),
-            _proteus_generic_attribute(comp, "SOURCE_SYMBOL_RAW"),
-        ]):
+        if _component_is_arrowhead(
+            [
+                comp.get("blockName", ""),
+                comp.get("componentName", ""),
+                comp.get("componentClass", ""),
+                comp.get("componentSubType", ""),
+                _proteus_generic_attribute(comp, "SOURCE_SYMBOL"),
+                _proteus_generic_attribute(comp, "SOURCE_SYMBOL_RAW"),
+            ]
+        ):
             pos = _find_child_local(comp, "Position")
             bbox_elem = _find_child_local(comp, "GraphicBounds")
             if pos is not None and bbox_elem is not None:
                 arrowhead_rotations[cid] = _infer_arrow_canvas_rotation(
-                    _float_attr(pos, "x"), _float_attr(pos, "y"),
-                    _float_attr(bbox_elem, "min_x"), _float_attr(bbox_elem, "max_x"),
-                    _float_attr(bbox_elem, "min_y"), _float_attr(bbox_elem, "max_y"),
+                    _float_attr(pos, "x"),
+                    _float_attr(pos, "y"),
+                    _float_attr(bbox_elem, "min_x"),
+                    _float_attr(bbox_elem, "max_x"),
+                    _float_attr(bbox_elem, "min_y"),
+                    _float_attr(bbox_elem, "max_y"),
                 )
             elif pos is not None:
                 arrowhead_rotations[cid] = -_float_attr(pos, "rotation")
 
     for segment in _iter_local(root, "PipeSegment"):
-        _draw_proteus_segment(axis, segment, view_box, pixel_scale, bbox_map, port_map, arrowhead_rotations)
+        _draw_proteus_segment(
+            axis,
+            segment,
+            view_box,
+            pixel_scale,
+            bbox_map,
+            port_map,
+            arrowhead_rotations,
+        )
 
     for component in components.values():
         _draw_proteus_component(axis, component, view_box, pixel_scale, use_block_names)
@@ -224,13 +246,18 @@ def _render_proteusxml(root, output_stem: Path, use_block_names: bool = False) -
     _finalize_figure(figure, axis, output_stem)
 
 
-def _render_xmplant_bbox(root, output_stem: Path, use_block_names: bool = False) -> None:
+def _render_xmplant_bbox(
+    root, output_stem: Path, use_block_names: bool = False
+) -> None:
     view_box = _extract_xmplant_view_box(root)
     pixel_scale = _pixel_scale(view_box)
     figure, axis = _build_figure(view_box, pixel_scale)
     axis.set_facecolor("white")
 
-    components = {component.get("ID", ""): component for component in _iter_local(root, "PipingComponent")}
+    components = {
+        component.get("ID", ""): component
+        for component in _iter_local(root, "PipingComponent")
+    }
     bbox_map = {
         component_id: _bbox_from_xmplant_component(component, view_box, pixel_scale)
         for component_id, component in components.items()
@@ -238,14 +265,16 @@ def _render_xmplant_bbox(root, output_stem: Path, use_block_names: bool = False)
     }
     arrowhead_rotations: dict = {}
     for cid, comp in components.items():
-        if _component_is_arrowhead([
-            comp.get("ComponentName", ""),
-            comp.get("ComponentClass", ""),
-            _xmplant_generic_attribute(comp, "SOURCE_SYMBOL"),
-            _xmplant_generic_attribute(comp, "SOURCE_SYMBOL_RAW"),
-            _xmplant_generic_attribute(comp, "DXF_BLOCK_NAME"),
-            _xmplant_generic_attribute(comp, "SUB_CLASS"),
-        ]):
+        if _component_is_arrowhead(
+            [
+                comp.get("ComponentName", ""),
+                comp.get("ComponentClass", ""),
+                _xmplant_generic_attribute(comp, "SOURCE_SYMBOL"),
+                _xmplant_generic_attribute(comp, "SOURCE_SYMBOL_RAW"),
+                _xmplant_generic_attribute(comp, "DXF_BLOCK_NAME"),
+                _xmplant_generic_attribute(comp, "SUB_CLASS"),
+            ]
+        ):
             _src2 = _normalize_key(_xmplant_generic_attribute(comp, "SOURCE_SYMBOL"))
             _ext2 = _find_child_local(comp, "Extent") if _src2 == "arrow_head" else None
             if _ext2 is not None:
@@ -255,9 +284,12 @@ def _render_xmplant_bbox(root, output_stem: Path, use_block_names: bool = False)
                 _oy2 = _xmplant_generic_attribute(comp, "ORIGINAL_DXF_Y")
                 if _mn2 is not None and _mx2 is not None and _ox2 and _oy2:
                     arrowhead_rotations[cid] = _infer_arrow_canvas_rotation(
-                        float(_ox2), float(_oy2),
-                        _float_attr(_mn2, "X"), _float_attr(_mx2, "X"),
-                        _float_attr(_mn2, "Y"), _float_attr(_mx2, "Y"),
+                        float(_ox2),
+                        float(_oy2),
+                        _float_attr(_mn2, "X"),
+                        _float_attr(_mx2, "X"),
+                        _float_attr(_mn2, "Y"),
+                        _float_attr(_mx2, "Y"),
                     )
                 else:
                     arrowhead_rotations[cid] = -_xmplant_rotation(comp)
@@ -365,12 +397,14 @@ def _extract_xmplant_view_box(root) -> ViewBox:
             min_node = _find_child_local(extent, "Min")
             max_node = _find_child_local(extent, "Max")
             if min_node is not None and max_node is not None:
-                bounds.append((
-                    _float_attr(min_node, "X"),
-                    _float_attr(min_node, "Y"),
-                    _float_attr(max_node, "X"),
-                    _float_attr(max_node, "Y"),
-                ))
+                bounds.append(
+                    (
+                        _float_attr(min_node, "X"),
+                        _float_attr(min_node, "Y"),
+                        _float_attr(max_node, "X"),
+                        _float_attr(max_node, "Y"),
+                    )
+                )
         # Location is in scaled DXF units (e.g. 227.76) while Extent is in normalized
         # space — mixing them would produce a huge view box and wrong pixel_scale.
     if bounds:
@@ -504,7 +538,9 @@ def _draw_primitive(
                 _to_canvas(center[0], center[1], view_box, pixel_scale),
                 radius=radius,
                 fill=primitive.get("Filled") == "Solid",
-                facecolor=style["color"] if primitive.get("Filled") == "Solid" else "none",
+                facecolor=(
+                    style["color"] if primitive.get("Filled") == "Solid" else "none"
+                ),
                 edgecolor=style["color"],
                 linewidth=style["linewidth"],
                 zorder=3,
@@ -543,7 +579,13 @@ def _draw_primitive(
 
 
 def _draw_proteus_segment(
-    axis, segment, view_box: ViewBox, pixel_scale: float, bbox_map, port_map=None, arrowhead_rotations=None
+    axis,
+    segment,
+    view_box: ViewBox,
+    pixel_scale: float,
+    bbox_map,
+    port_map=None,
+    arrowhead_rotations=None,
 ) -> None:
     start_xml = _find_child_local(segment, "Start")
     end_xml = _find_child_local(segment, "End")
@@ -568,15 +610,31 @@ def _draw_proteus_segment(
 
     # Use the opposite endpoint as the "facing" reference so we pick the correct port
     start_point = _resolve_port_anchor(
-        axis, start_id, start_box, seg_ex, seg_ey, port_map, style,
+        axis,
+        start_id,
+        start_box,
+        seg_ex,
+        seg_ey,
+        port_map,
+        style,
         arrowhead_rotation=start_rot,
     )
     end_point = _resolve_port_anchor(
-        axis, end_id, end_box, seg_sx, seg_sy, port_map, style,
+        axis,
+        end_id,
+        end_box,
+        seg_sx,
+        seg_sy,
+        port_map,
+        style,
         arrowhead_rotation=end_rot,
     )
 
-    points = _orthogonal_route(start_point, end_point, vertical_first=_arrowhead_arrival_vertical_first(end_rot))
+    points = _orthogonal_route(
+        start_point,
+        end_point,
+        vertical_first=_arrowhead_arrival_vertical_first(end_rot),
+    )
     axis.plot(
         [point[0] for point in points],
         [point[1] for point in points],
@@ -591,7 +649,8 @@ def _draw_proteus_segment(
     if nominal_diameter:
         mid_x, mid_y = _label_point_for_path(points)
         axis.text(
-            mid_x, mid_y + TEXT_DISTANCE_FROM_PIPE,
+            mid_x,
+            mid_y + TEXT_DISTANCE_FROM_PIPE,
             nominal_diameter,
             fontsize=7,
             color=style["color"],
@@ -630,7 +689,9 @@ def _resolve_port_anchor(
 
     if bbox is not None:
         if arrowhead_rotation is not None:
-            return _resolve_arrowhead_anchor(axis, bbox, arrowhead_rotation, target_x, target_y, style)
+            return _resolve_arrowhead_anchor(
+                axis, bbox, arrowhead_rotation, target_x, target_y, style
+            )
         cx = (bbox.left + bbox.right) / 2.0
         cy = (bbox.top + bbox.bottom) / 2.0
         dx = target_x - cx
@@ -642,7 +703,13 @@ def _resolve_port_anchor(
     return (target_x, target_y)
 
 
-def _draw_proteus_component(axis, component, view_box: ViewBox, pixel_scale: float, use_block_names: bool = False) -> None:
+def _draw_proteus_component(
+    axis,
+    component,
+    view_box: ViewBox,
+    pixel_scale: float,
+    use_block_names: bool = False,
+) -> None:
     position = _find_child_local(component, "Position")
     bbox_element = _find_child_local(component, "GraphicBounds")
     if position is None and bbox_element is None:
@@ -659,9 +726,12 @@ def _draw_proteus_component(axis, component, view_box: ViewBox, pixel_scale: flo
     # the stored rotation (which varies by source block local orientation).
     if _src == "arrow_head" and position is not None and bbox_element is not None:
         rotation = _infer_arrow_canvas_rotation(
-            _float_attr(position, "x"), _float_attr(position, "y"),
-            _float_attr(bbox_element, "min_x"), _float_attr(bbox_element, "max_x"),
-            _float_attr(bbox_element, "min_y"), _float_attr(bbox_element, "max_y"),
+            _float_attr(position, "x"),
+            _float_attr(position, "y"),
+            _float_attr(bbox_element, "min_x"),
+            _float_attr(bbox_element, "max_x"),
+            _float_attr(bbox_element, "min_y"),
+            _float_attr(bbox_element, "max_y"),
         )
 
     # Connector-type symbols: INSERT at far edge means geometry was mirrored.
@@ -682,16 +752,28 @@ def _draw_proteus_component(axis, component, view_box: ViewBox, pixel_scale: flo
 
     spec = _resolve_proteus_visual_spec(component, bbox)
     if spec is not None:
-        drawn_bbox = draw_visual_spec(axis, center_x, center_y, spec, rotation, flip_y=True)
+        drawn_bbox = draw_visual_spec(
+            axis, center_x, center_y, spec, rotation, flip_y=True
+        )
     else:
         drawn_bbox = _draw_rotated_bbox_fallback(axis, bbox, rotation)
 
-    labels = _proteus_block_name_labels(component) if use_block_names else _proteus_labels(component)
+    labels = (
+        _proteus_block_name_labels(component)
+        if use_block_names
+        else _proteus_labels(component)
+    )
     if labels:
         _draw_component_label(axis, drawn_bbox, labels)
 
 
-def _draw_xmplant_component(axis, component, view_box: ViewBox, pixel_scale: float, use_block_names: bool = False) -> None:
+def _draw_xmplant_component(
+    axis,
+    component,
+    view_box: ViewBox,
+    pixel_scale: float,
+    use_block_names: bool = False,
+) -> None:
     bbox = _bbox_from_xmplant_component(component, view_box, pixel_scale)
     center_x = (bbox.left + bbox.right) / 2.0
     center_y = (bbox.top + bbox.bottom) / 2.0
@@ -704,14 +786,18 @@ def _draw_xmplant_component(axis, component, view_box: ViewBox, pixel_scale: flo
     if _src == "arrow_head":
         _ext = _find_child_local(component, "Extent")
         if _ext is not None:
-            _mn = _find_child_local(_ext, "Min"); _mx = _find_child_local(_ext, "Max")
+            _mn = _find_child_local(_ext, "Min")
+            _mx = _find_child_local(_ext, "Max")
             _ox = _xmplant_generic_attribute(component, "ORIGINAL_DXF_X")
             _oy = _xmplant_generic_attribute(component, "ORIGINAL_DXF_Y")
             if _mn is not None and _mx is not None and _ox and _oy:
                 rotation = _infer_arrow_canvas_rotation(
-                    float(_ox), float(_oy),
-                    _float_attr(_mn, "X"), _float_attr(_mx, "X"),
-                    _float_attr(_mn, "Y"), _float_attr(_mx, "Y"),
+                    float(_ox),
+                    float(_oy),
+                    _float_attr(_mn, "X"),
+                    _float_attr(_mx, "X"),
+                    _float_attr(_mn, "Y"),
+                    _float_attr(_mx, "Y"),
                 )
 
     # Connector-type symbols: INSERT at far edge means geometry was mirrored.
@@ -740,23 +826,33 @@ def _draw_xmplant_component(axis, component, view_box: ViewBox, pixel_scale: flo
 
     spec = _resolve_xmplant_visual_spec(component, bbox)
     if spec is not None:
-        drawn_bbox = draw_visual_spec(axis, center_x, center_y, spec, rotation, flip_y=True)
+        drawn_bbox = draw_visual_spec(
+            axis, center_x, center_y, spec, rotation, flip_y=True
+        )
     else:
         drawn_bbox = _draw_rotated_bbox_fallback(axis, bbox, rotation)
 
-    labels = _xmplant_block_name_labels(component) if use_block_names else _xmplant_labels(component)
+    labels = (
+        _xmplant_block_name_labels(component)
+        if use_block_names
+        else _xmplant_labels(component)
+    )
     if labels:
         _draw_component_label(axis, drawn_bbox, labels)
 
 
-def _bbox_from_proteus_element(component, view_box: ViewBox, pixel_scale: float) -> BBox:
+def _bbox_from_proteus_element(
+    component, view_box: ViewBox, pixel_scale: float
+) -> BBox:
     bbox = _find_child_local(component, "GraphicBounds")
     if bbox is not None:
         left = _to_canvas_x(_float_attr(bbox, "min_x"), view_box, pixel_scale)
         right = _to_canvas_x(_float_attr(bbox, "max_x"), view_box, pixel_scale)
         top = _to_canvas_y(_float_attr(bbox, "max_y"), view_box, pixel_scale)
         bottom = _to_canvas_y(_float_attr(bbox, "min_y"), view_box, pixel_scale)
-        return BBox(min(left, right), max(left, right), min(top, bottom), max(top, bottom))
+        return BBox(
+            min(left, right), max(left, right), min(top, bottom), max(top, bottom)
+        )
 
     position = _find_child_local(component, "Position")
     x = _to_canvas_x(_float_attr(position, "x"), view_box, pixel_scale)
@@ -764,11 +860,15 @@ def _bbox_from_proteus_element(component, view_box: ViewBox, pixel_scale: float)
     return BBox(x - 6.0, x + 6.0, y - 6.0, y + 6.0)
 
 
-def _bbox_from_xmplant_component(component, view_box: ViewBox, pixel_scale: float) -> BBox:
+def _bbox_from_xmplant_component(
+    component, view_box: ViewBox, pixel_scale: float
+) -> BBox:
     extent = _find_child_local(component, "Extent")
     if extent is None:
         position = _find_child_local(component, "Position")
-        location = _find_child_local(position, "Location") if position is not None else None
+        location = (
+            _find_child_local(position, "Location") if position is not None else None
+        )
         if location is None:
             return BBox(0.0, 12.0, 0.0, 12.0)
         x = _to_canvas_x(_float_attr(location, "X"), view_box, pixel_scale)
@@ -862,9 +962,7 @@ def _resolve_asset_file(symbol_key: str) -> str:
     best_name = ""
     best_score = 0
     for candidate in candidates:
-        candidate_tokens = {
-            token for token in candidate.split("_") if len(token) >= 2
-        }
+        candidate_tokens = {token for token in candidate.split("_") if len(token) >= 2}
         if not candidate_tokens:
             continue
         for asset_key, asset_name in exact_map.items():
@@ -893,7 +991,9 @@ def _draw_rotated_bbox_fallback(axis, bbox: BBox, rotation: float) -> BBox:
         (center_x + half_w, center_y + half_h),
         (center_x - half_w, center_y + half_h),
     ]
-    rotated = [_rotate_point(point, (center_x, center_y), rotation) for point in corners]
+    rotated = [
+        _rotate_point(point, (center_x, center_y), rotation) for point in corners
+    ]
     axis.add_patch(
         Polygon(
             rotated,
@@ -1027,13 +1127,17 @@ def _draw_xmplant_segment(axis, segment, bbox_map, arrowhead_rotations=None) -> 
 
     start = (
         _resolve_arrowhead_anchor(axis, from_box, from_rot, to_cx, to_cy, style)
-        if from_rot is not None else _bbox_anchor(from_box, to_box)
+        if from_rot is not None
+        else _bbox_anchor(from_box, to_box)
     )
     end = (
         _resolve_arrowhead_anchor(axis, to_box, to_rot, fr_cx, fr_cy, style)
-        if to_rot is not None else _bbox_anchor(to_box, from_box)
+        if to_rot is not None
+        else _bbox_anchor(to_box, from_box)
     )
-    points = _orthogonal_route(start, end, vertical_first=_arrowhead_arrival_vertical_first(to_rot))
+    points = _orthogonal_route(
+        start, end, vertical_first=_arrowhead_arrival_vertical_first(to_rot)
+    )
     axis.plot(
         [point[0] for point in points],
         [point[1] for point in points],
@@ -1048,7 +1152,8 @@ def _draw_xmplant_segment(axis, segment, bbox_map, arrowhead_rotations=None) -> 
     if nominal_diameter:
         mid_x, mid_y = _label_point_for_path(points)
         axis.text(
-            mid_x, mid_y + 6,
+            mid_x,
+            mid_y + 6,
             nominal_diameter,
             fontsize=7,
             color=style["color"],
@@ -1074,7 +1179,9 @@ def _build_port_map(components: dict, view_box: ViewBox, pixel_scale: float) -> 
     return port_map
 
 
-def _find_closest_port(ports: list, target_x: float, target_y: float) -> tuple[float, float]:
+def _find_closest_port(
+    ports: list, target_x: float, target_y: float
+) -> tuple[float, float]:
     return min(ports, key=lambda p: (p[0] - target_x) ** 2 + (p[1] - target_y) ** 2)
 
 
@@ -1118,9 +1225,12 @@ def _arrowhead_anchor(
 
 
 def _infer_arrow_canvas_rotation(
-    px: float, py: float,
-    xmin: float, xmax: float,
-    ymin: float, ymax: float,
+    px: float,
+    py: float,
+    xmin: float,
+    xmax: float,
+    ymin: float,
+    ymax: float,
 ) -> float:
     """Return the canvas rotation (degrees) for a flow arrow by finding which bbox
     edge the TIP (INSERT position px,py) is closest to.
@@ -1136,10 +1246,10 @@ def _infer_arrow_canvas_rotation(
     # Score each edge by how close the TIP is to it (1.0 = exactly on that edge).
     # Asset at rot=0→LEFT, rot=180→RIGHT, rot=90→UP, rot=-90→DOWN (canvas Y-down).
     candidates = [
-        (rx,       180.0), # TIP near right edge  → RIGHT (needs 180°)
-        (1.0 - rx,   0.0), # TIP near left edge   → LEFT  (needs 0°)
-        (ry,        90.0), # TIP near world max_y → UP    (needs 90°, canvas Y inverted)
-        (1.0 - ry, -90.0), # TIP near world min_y → DOWN  (needs -90°)
+        (rx, 180.0),  # TIP near right edge  → RIGHT (needs 180°)
+        (1.0 - rx, 0.0),  # TIP near left edge   → LEFT  (needs 0°)
+        (ry, 90.0),  # TIP near world max_y → UP    (needs 90°, canvas Y inverted)
+        (1.0 - ry, -90.0),  # TIP near world min_y → DOWN  (needs -90°)
     ]
     return max(candidates, key=lambda c: c[0])[1]
 
@@ -1159,9 +1269,9 @@ def _resolve_arrowhead_anchor(
     sin_a = math.sin(math.radians(rotation_deg))
     half = (abs(cos_a) * bbox.width + abs(sin_a) * bbox.height) / 2.0
 
-    tip  = (cx + cos_a * half, cy + sin_a * half)
+    tip = (cx + cos_a * half, cy + sin_a * half)
     base = (cx - cos_a * half, cy - sin_a * half)
-    d_tip  = (tip[0]  - target_x) ** 2 + (tip[1]  - target_y) ** 2
+    d_tip = (tip[0] - target_x) ** 2 + (tip[1] - target_y) ** 2
     d_base = (base[0] - target_x) ** 2 + (base[1] - target_y) ** 2
 
     if d_tip < d_base:
@@ -1444,7 +1554,4 @@ def _asset_name_map():
 
 @lru_cache(maxsize=1)
 def _asset_name_map_cached():
-    return {
-        _normalize_key(path.stem): path.name
-        for path in ASSET_DIR.glob("*.dxf")
-    }
+    return {_normalize_key(path.stem): path.name for path in ASSET_DIR.glob("*.dxf")}

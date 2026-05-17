@@ -29,21 +29,29 @@ else:
 
 def list_plot_files() -> list[str]:
     return sorted(
-        path.name for path in OUTPUT_PLOTS_DIR.iterdir() if path.suffix.lower() == ".png"
+        path.name
+        for path in OUTPUT_PLOTS_DIR.iterdir()
+        if path.suffix.lower() == ".png"
     )
+
+
+browse_button = psg.FolderBrowse(initial_folder=saved_dexpi_path, key="browse_btn")
 
 # Define window content
 col_left = [
     [psg.Text("Choose DEXPI - P&ID - folder...")],
     [
-        psg.Input(key="path_dexpi", default_text=saved_dexpi_path),
-        psg.FolderBrowse(initial_folder=saved_dexpi_path),
+        psg.Input(key="path_dexpi", default_text=saved_dexpi_path, enable_events=True),
+        browse_button,
     ],
     [psg.Text("Processing Information / Console...")],
     [psg.Output(size=(60, 30), key="_output_")],
     [
         psg.Button("Convert"),
         psg.Checkbox("Include xmplant output", key="xmplant_output", default=False),
+        psg.Text(
+            "Ready...", key="status_text", text_color="green", background_color="white"
+        ),
     ],
     [
         psg.Button("show graphML P&ID in Explorer"),
@@ -98,15 +106,20 @@ while True:
     event, values = window.read()
     list_elem.update(list_plot_files())
     if event == "Convert":
-
+        window["status_text"].update(
+            value="Working...", text_color="yellow", background_color="black"
+        )
         dexpi_path = values["path_dexpi"]
 
         if dexpi_path == "":
             psg.popup("Enter path of the DEXPI folder!")
-
+            window["status_text"].update(
+                value="Ready...", text_color="green", background_color="white"
+            )
         else:
             dexpi_root = Path(dexpi_path)
             save_path(dexpi_path)
+            window["browse_btn"].InitialFolder = dexpi_path
             print()
             print()
             print("Open Directory:", dexpi_root)
@@ -132,6 +145,10 @@ while True:
                     include_xmplant=values["xmplant_output"],
                 )
         list_elem.update(list_plot_files())
+
+        window["status_text"].update(
+            value="Ready...", text_color="green", background_color="white"
+        )
 
     ### Kasten auswahl einfügen
     if event == "show graphML P&ID in Explorer":
