@@ -9,7 +9,7 @@ AC1032
   9
 $ACADMAINTVER
  90
-      329
+      378
   9
 $DWGCODEPAGE
   3
@@ -17,7 +17,7 @@ ANSI_1252
   9
 $LASTSAVEDBY
   1
-ServerName
+haris
   9
 $REQUIREDVERSIONS
 160
@@ -41,9 +41,9 @@ $EXTMIN
   9
 $EXTMAX
  10
-0.014
+0.012
  20
-0.014
+0.012
  30
 0.0
   9
@@ -493,27 +493,27 @@ $SKPOLY
   9
 $TDCREATE
  40
-2460922.016145833
+2461139.792488426
   9
 $TDUCREATE
  40
-2460921.849479167
+2461139.584155093
   9
 $TDUPDATE
  40
-2460922.019097222
+2461139.792986111
   9
 $TDUUPDATE
  40
-2460921.852430555
+2461139.584652778
   9
 $TDINDWG
  40
-0.0029513889
+0.0004976852
   9
 $TDUSRTIMER
  40
-0.0029513889
+0.0004976852
   9
 $USRTIMER
  70
@@ -553,7 +553,7 @@ $SPLINESEGS
   9
 $HANDSEED
   5
-289
+285
   9
 $SURFTAB1
  70
@@ -933,11 +933,11 @@ $PSTYLEMODE
   9
 $FINGERPRINTGUID
   2
-{20FF083D-332C-6B40-8BBF-383F3A75A32D}
+{96212BCD-874E-9549-AACC-649ECB779538}
   9
 $VERSIONGUID
   2
-{E455886B-AAE7-F14F-99FF-9891522C7EFC}
+{1E7A4E5A-9CC7-234F-B4A8-BBBB5C48DB7F}
   9
 $EXTNAMES
 290
@@ -1247,7 +1247,7 @@ ObjectDBX Classes
  90
      1152
  91
-        3
+        2
 280
      0
 281
@@ -1343,7 +1343,7 @@ ObjectDBX Classes
  90
      1025
  91
-        2
+        1
 280
      0
 281
@@ -1359,23 +1359,7 @@ ObjectDBX Classes
  90
      1025
  91
-        2
-280
-     0
-281
-     0
-  0
-CLASS
-  1
-RAPIDRTRENDERSETTINGS
-  2
-AcDbRapidRTRenderSettings
-  3
-ObjectDBX Classes
- 90
-     1024
- 91
-        7
+        1
 280
      0
 281
@@ -1391,7 +1375,7 @@ ObjectDBX Classes
  90
         0
  91
-        2
+        1
 280
      0
 281
@@ -1407,7 +1391,55 @@ SCENEOE
  90
      4095
  91
-        2
+        1
+280
+     0
+281
+     0
+  0
+CLASS
+  1
+ACAD_EVALUATION_GRAPH
+  2
+AcDbEvalGraph
+  3
+ObjectDBX Classes
+ 90
+     1153
+ 91
+        1
+280
+     0
+281
+     0
+  0
+CLASS
+  1
+ACAECUSTOBJ
+  2
+AcAeEditorObj
+  3
+AcAeEditorObj
+ 90
+     1024
+ 91
+        1
+280
+     0
+281
+     0
+  0
+CLASS
+  1
+ACDB_DYNAMICBLOCKPURGEPREVENTER_VERSION
+  2
+AcDbDynamicBlockPurgePreventer
+  3
+ObjectDBX Classes
+ 90
+     1153
+ 91
+        1
 280
      0
 281
@@ -1453,9 +1485,9 @@ AcDbViewportTableRecord
  21
 1.0
  12
--0.0024694987327351
+0.0
  22
--0.0017425129219623
+0.0
  13
 0.0
  23
@@ -1473,17 +1505,17 @@ AcDbViewportTableRecord
  26
 0.0
  36
-0.070812525512749
+0.0562492855560264
  17
-0.0070158484868443
+0.0060357144102454
  27
-0.0069999998886487
+0.0060000000521541
  37
 0.0
  40
-0.0198925390767476
+0.0170211455628454
  41
-2.807183364839319
+2.555259653794939
  42
 50.0
  43
@@ -1571,7 +1603,7 @@ LTYPE
 100
 AcDbSymbolTable
  70
-     2
+     1
   0
 LTYPE
   5
@@ -1693,7 +1725,41 @@ F
   0
 LAYER
   5
-25C
+262
+330
+2
+100
+AcDbSymbolTableRecord
+100
+AcDbLayerTableRecord
+  2
+Level 5
+ 70
+     0
+ 62
+     9
+420
+ 13158600
+  6
+Continuous
+370
+     0
+390
+F
+347
+98
+348
+0
+1001
+AcAecLayerStandard
+1000
+
+1000
+
+  0
+LAYER
+  5
+263
 330
 2
 100
@@ -1727,7 +1793,7 @@ AcAecLayerStandard
   0
 LAYER
   5
-25D
+264
 330
 2
 100
@@ -1736,40 +1802,6 @@ AcDbSymbolTableRecord
 AcDbLayerTableRecord
   2
 Level 59
- 70
-     0
- 62
-     9
-420
- 13158600
-  6
-Continuous
-370
-     0
-390
-F
-347
-98
-348
-0
-1001
-AcAecLayerStandard
-1000
-
-1000
-
-  0
-LAYER
-  5
-26D
-330
-2
-100
-AcDbSymbolTableRecord
-100
-AcDbLayerTableRecord
-  2
-Level 5
  70
      0
  62
@@ -1889,7 +1921,7 @@ Arial
   0
 STYLE
   5
-26E
+265
 330
 3
 100
@@ -1909,7 +1941,7 @@ Styledgn000
  71
      0
  42
-2.5
+0.2
   3
 dgn000.shx
   4
@@ -1955,7 +1987,7 @@ APPID
 100
 AcDbSymbolTable
  70
-     9
+    11
   0
 APPID
   5
@@ -2057,7 +2089,7 @@ ACAD_NAV_VCDISPLAY
   0
 APPID
   5
-25F
+266
 330
 9
 100
@@ -2071,6 +2103,34 @@ AcAecLayerStandard
   0
 APPID
   5
+279
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbRegAppTableRecord
+  2
+ACAUTHENVIRON
+ 70
+     0
+  0
+APPID
+  5
+27D
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbRegAppTableRecord
+  2
+AcDbDynamicBlockTrueName
+ 70
+     0
+  0
+APPID
+  5
 27E
 330
 9
@@ -2079,7 +2139,7 @@ AcDbSymbolTableRecord
 100
 AcDbRegAppTableRecord
   2
-ACAD_EXEMPT_FROM_CAD_STANDARDS
+AcDbDynamicBlockGUID
  70
      0
   0
@@ -2095,7 +2155,7 @@ A
 100
 AcDbSymbolTable
  70
-     3
+     2
 100
 AcDbDimStyleTable
  71
@@ -2162,64 +2222,6 @@ ACAD_DSTYLE_DIMTALN
    392
 1070
      0
-  0
-DIMSTYLE
-105
-25E
-330
-A
-100
-AcDbSymbolTableRecord
-100
-AcDbDimStyleTableRecord
-  2
-ISO-25
- 70
-     0
- 41
-2.5
- 42
-0.625
- 43
-3.75
- 44
-1.25
- 50
-90.0
- 73
-     0
- 74
-     0
- 77
-     1
- 78
-     8
-140
-2.5
-141
-2.5
-143
-0.03937007874016
-147
-0.625
-171
-     3
-172
-     1
-271
-     2
-272
-     2
-274
-     3
-278
-    44
-283
-     0
-284
-     8
-340
-11
   0
 ENDTAB
   0
@@ -2303,7 +2305,13 @@ AcDbBlockTableRecord
   0
 BLOCK_RECORD
   5
-258
+25B
+102
+{ACAD_XDICTIONARY
+360
+27A
+102
+}
 330
 1
 100
@@ -2311,15 +2319,13 @@ AcDbSymbolTableRecord
 100
 AcDbBlockTableRecord
   2
-00110011
+AnonymousCell5
 340
 0
 102
 {BLKREFS
 331
-278
-331
-269
+26E
 102
 }
  70
@@ -2328,6 +2334,10 @@ AcDbBlockTableRecord
      1
 281
      0
+1001
+AcDbDynamicBlockGUID
+1000
+{531C6CAA-9194-DF48-AF4C-00EAD0575803}
   0
 ENDTAB
   0
@@ -2461,9 +2471,9 @@ AcDbBlockEnd
   0
 BLOCK
   5
-259
+25C
 330
-258
+25B
 100
 AcDbEntity
   8
@@ -2471,7 +2481,7 @@ AcDbEntity
 100
 AcDbBlockBegin
   2
-00110011
+AnonymousCell5
  70
      0
  10
@@ -2481,15 +2491,15 @@ AcDbBlockBegin
  30
 0.0
   3
-00110011
+AnonymousCell5
   1
 
   0
-CIRCLE
+LWPOLYLINE
   5
-25A
+275
 330
-258
+25B
 100
 AcDbEntity
   8
@@ -2503,21 +2513,139 @@ Continuous
 370
     13
 100
-AcDbCircle
+AcDbPolyline
+ 90
+        5
+ 70
+   128
+ 43
+0.0
  10
-0.0
+-0.006
  20
-0.0
+-0.006
+ 10
+0.006
+ 20
+-0.006
+ 10
+0.006
+ 20
+0.006
+ 10
+-0.006
+ 20
+0.006
+ 10
+-0.006
+ 20
+-0.006
+  0
+MTEXT
+  5
+276
+330
+25B
+100
+AcDbEntity
+  8
+Level 5
+  6
+Continuous
+ 62
+     9
+420
+ 13158600
+370
+    13
+100
+AcDbMText
+ 10
+-0.0035099994182236
+ 20
+0.0039999999999999
  30
 0.0
  40
-0.007
+0.003
+ 41
+0.0
+ 46
+0.003
+ 71
+     1
+ 72
+     5
+  1
+CI
+  7
+Styledgn000
+ 11
+0.9999999999999811
+ 21
+-0.0000001939254724
+ 31
+0.0
+ 73
+     2
+ 44
+0.8
+  0
+MTEXT
+  5
+277
+330
+25B
+100
+AcDbEntity
+  8
+Level 5
+  6
+Continuous
+ 62
+     9
+420
+ 13158600
+370
+    13
+100
+AcDbMText
+ 10
+-0.0025999994182236
+ 20
+-0.0010000000000001
+ 30
+0.0
+ 40
+0.003
+ 41
+0.0
+ 46
+0.003
+ 71
+     1
+ 72
+     5
+  1
+  
+  7
+Styledgn000
+ 11
+0.9999999999999811
+ 21
+-0.0000001939254724
+ 31
+0.0
+ 73
+     2
+ 44
+0.8
   0
 ENDBLK
   5
-25B
+261
 330
-258
+25B
 100
 AcDbEntity
   8
@@ -2533,69 +2661,13 @@ ENTITIES
   0
 INSERT
   5
-269
+26E
 330
 1F
 100
 AcDbEntity
   8
 0
-  6
-Continuous
- 62
-     9
-420
- 13158600
-370
-     0
-100
-AcDbBlockReference
-  2
-00110011
- 10
-0.007
- 20
-0.007
- 30
-0.0
-  0
-INSERT
-  5
-278
-330
-1F
-100
-AcDbEntity
-  8
-0
-  6
-Continuous
- 62
-     9
-420
- 13158600
-370
-     0
-100
-AcDbBlockReference
-  2
-00110011
- 10
-0.007
- 20
-0.007
- 30
-0.0
-  0
-MTEXT
-  5
-279
-330
-1F
-100
-AcDbEntity
-  8
-Level 5
   6
 Continuous
  62
@@ -2605,109 +2677,13 @@ Continuous
 370
     13
 100
-AcDbMText
+AcDbBlockReference
+  2
+AnonymousCell5
  10
-0.0069871419975702
+0.006
  20
-0.0039375
- 30
-0.0
- 40
-0.00252
- 41
-0.0
- 46
-0.00252
- 71
-     5
- 72
-     5
-  1
-{\W0.88095;TagNo}
-  7
-Styledgn000
- 73
-     2
- 44
-0.8
-  0
-MTEXT
-  5
-27A
-330
-1F
-100
-AcDbEntity
-  8
-Level 5
-  6
-Continuous
- 62
-     9
-420
- 13158600
-370
-    13
-100
-AcDbMText
- 10
-0.0071534301084985
- 20
-0.0100625
- 30
-0.0
- 40
-0.00252
- 41
-0.0
- 46
-0.00252
- 71
-     5
- 72
-     5
-  1
-{\W0.88095;TI}
-  7
-Styledgn000
- 73
-     2
- 44
-0.8
-  0
-POINT
-  5
-280
-330
-1F
-100
-AcDbEntity
-  8
-0
-100
-AcDbPoint
- 10
-0.007
- 20
-0.0
- 30
-0.0
-  0
-POINT
-  5
-281
-330
-1F
-100
-AcDbEntity
-  8
-0
-100
-AcDbPoint
- 10
-0.007
- 20
-0.014
+0.006
  30
 0.0
   0
@@ -2729,7 +2705,7 @@ AcDbDictionary
   3
 ACAD_BACKGROUND
 350
-27B
+26F
   3
 ACAD_CIP_PREVIOUS_PRODUCT_INFO
 350
@@ -2749,7 +2725,7 @@ D
   3
 ACAD_LAST_SAVED_VERSION_INFO
 350
-282
+280
   3
 ACAD_LAYOUT
 350
@@ -2775,14 +2751,6 @@ ACAD_PLOTSTYLENAME
 350
 E
   3
-ACAD_RENDER_ACTIVE_RAPIDRT_SETTINGS
-350
-257
-  3
-ACAD_RENDER_RAPIDRT_SETTINGS
-350
-250
-  3
 ACAD_SCALELIST
 350
 B6
@@ -2801,15 +2769,11 @@ ACAD_VISUALSTYLE
   3
 ACDB_RECOMPOSE_DATA
 350
-288
+284
   3
 AcDbVariableDictionary
 350
 66
-  3
-Autodesk_PNP
-350
-24F
   0
 DICTIONARY
   5
@@ -2853,7 +2817,19 @@ AcDbDictionary
   0
 DICTIONARY
   5
-27B
+27A
+330
+25B
+100
+AcDbDictionary
+280
+     1
+281
+     1
+  0
+DICTIONARY
+  5
+26F
 102
 {ACAD_REACTORS
 330
@@ -2883,9 +2859,9 @@ AcDbXrecord
 280
      1
 300
-PLNT3D
+ACD
 300
-2025
+2026
 300
 
   0
@@ -2924,10 +2900,6 @@ AcDbDictionary
 Imperial24
 350
 1AC
-  3
-Metric50
-350
-261
   0
 DICTIONARY
   5
@@ -2947,7 +2919,7 @@ AcDbDictionary
   0
 XRECORD
   5
-282
+280
 102
 {ACAD_REACTORS
 330
@@ -2961,13 +2933,13 @@ AcDbXrecord
 280
      1
 300
-{E455886B-AAE7-F14F-99FF-9891522C7EFC}
+{1E7A4E5A-9CC7-234F-B4A8-BBBB5C48DB7F}
 301
-{3A5C80CB-5817-4F46-943D-4128E5D920A9}
+{B681E145-D501-1747-AAD2-EFB07DFD2833}
 302
-{E455886B-AAE7-F14F-99FF-9891522C7EFC}
+{1E7A4E5A-9CC7-234F-B4A8-BBBB5C48DB7F}
 303
-E:\Autocad-Automation-main\Autocad-Automation-main\CIRCULAR_COMPS\TI.dxf
+D:\PIDs Symbol Detector\symbols\CI.dxf
   0
 DICTIONARY
   5
@@ -3108,98 +3080,6 @@ F
 AcDbDictionaryWithDefault
 340
 F
-  0
-RAPIDRTRENDERSETTINGS
-  5
-257
-102
-{ACAD_REACTORS
-330
-C
-102
-}
-330
-C
-100
-AcDbRenderSettings
- 90
-        2
-  1
-Medium
-290
-     1
-290
-     0
-290
-     1
-290
-     1
-  1
-
-  1
-Applies 5 rendering levels
- 90
-        0
-100
-AcDbRapidRTRenderSettings
- 90
-        3
- 70
-     0
- 90
-        5
- 90
-        1
- 70
-     1
- 70
-     2
- 40
-3.0
- 40
-3.0
-290
-     1
-  0
-DICTIONARY
-  5
-250
-102
-{ACAD_REACTORS
-330
-C
-102
-}
-330
-C
-100
-AcDbDictionary
-281
-     1
-  3
-Coffee-Break Quality
-350
-254
-  3
-High
-350
-253
-  3
-Low
-350
-251
-  3
-Lunch Quality
-350
-255
-  3
-Medium
-350
-252
-  3
-Overnight Quality
-350
-256
   0
 DICTIONARY
   5
@@ -3368,10 +3248,6 @@ AcDbDictionary
 Imperial24
 350
 1AA
-  3
-Metric50
-350
-260
   0
 DICTIONARY
   5
@@ -3507,7 +3383,7 @@ X-Ray
   0
 XRECORD
   5
-288
+284
 102
 {ACAD_REACTORS
 330
@@ -3576,22 +3452,6 @@ LAYEREVAL
 LAYERNOTIFY
 350
 14E
-  0
-DICTIONARY
-  5
-24F
-102
-{ACAD_REACTORS
-330
-C
-102
-}
-330
-C
-100
-AcDbDictionary
-281
-     1
   0
 DICTIONARY
   5
@@ -3684,98 +3544,6 @@ AcDbDetailViewStyle
         1
 300
 %<\AcVar ViewType \f "%tc1">% %<\AcVar ViewDetailId>%\PSCALE %<\AcVar ViewScale \f "%sn">%
- 71
-     4
-340
-16
- 90
-       25
- 62
-   256
-340
-16
- 90
-       25
- 62
-   256
-280
-     0
-  0
-ACDBDETAILVIEWSTYLE
-  5
-261
-102
-{ACAD_REACTORS
-330
-1AB
-102
-}
-330
-1AB
-100
-AcDbModelDocViewStyle
- 70
-     0
-  3
-Metric50
-290
-     0
-300
-Metric50
- 90
-        0
-100
-AcDbDetailViewStyle
- 70
-     0
- 71
-     0
- 90
-        3
- 71
-     1
-340
-11
- 62
-   256
- 40
-5.0
-340
-0
- 62
-   256
- 40
-5.0
-300
-
- 40
-0.0
-280
-     1
- 71
-     2
-340
-16
- 90
-       25
- 62
-   256
- 71
-     3
-340
-11
- 62
-   256
- 40
-5.0
- 90
-        0
- 40
-15.0
- 90
-        1
-300
-%<\AcVar ViewDetailId>% (%<\AcVar ViewScale \f "%sn">%)
  71
      4
 340
@@ -4667,318 +4435,6 @@ E
 330
 E
   0
-RAPIDRTRENDERSETTINGS
-  5
-254
-102
-{ACAD_REACTORS
-330
-250
-102
-}
-330
-250
-100
-AcDbRenderSettings
- 90
-        2
-  1
-Coffee-Break Quality
-290
-     1
-290
-     0
-290
-     1
-290
-     1
-  1
-
-  1
-Renders for 10 minutes
- 90
-        3
-100
-AcDbRapidRTRenderSettings
- 90
-        3
- 70
-     1
- 90
-        1
- 90
-       10
- 70
-     1
- 70
-     2
- 40
-3.0
- 40
-3.0
-290
-     1
-  0
-RAPIDRTRENDERSETTINGS
-  5
-253
-102
-{ACAD_REACTORS
-330
-250
-102
-}
-330
-250
-100
-AcDbRenderSettings
- 90
-        2
-  1
-High
-290
-     1
-290
-     0
-290
-     1
-290
-     1
-  1
-
-  1
-Applies 10 rendering levels
- 90
-        2
-100
-AcDbRapidRTRenderSettings
- 90
-        3
- 70
-     0
- 90
-       10
- 90
-        1
- 70
-     2
- 70
-     2
- 40
-3.0
- 40
-3.0
-290
-     1
-  0
-RAPIDRTRENDERSETTINGS
-  5
-251
-102
-{ACAD_REACTORS
-330
-250
-102
-}
-330
-250
-100
-AcDbRenderSettings
- 90
-        2
-  1
-Low
-290
-     1
-290
-     0
-290
-     1
-290
-     1
-  1
-
-  1
-Applies 1 rendering level
- 90
-        0
-100
-AcDbRapidRTRenderSettings
- 90
-        3
- 70
-     0
- 90
-        1
- 90
-        1
- 70
-     0
- 70
-     2
- 40
-3.0
- 40
-3.0
-290
-     1
-  0
-RAPIDRTRENDERSETTINGS
-  5
-255
-102
-{ACAD_REACTORS
-330
-250
-102
-}
-330
-250
-100
-AcDbRenderSettings
- 90
-        2
-  1
-Lunch Quality
-290
-     1
-290
-     0
-290
-     1
-290
-     1
-  1
-
-  1
-Renders for 60 minutes
- 90
-        4
-100
-AcDbRapidRTRenderSettings
- 90
-        3
- 70
-     1
- 90
-        1
- 90
-       60
- 70
-     2
- 70
-     2
- 40
-3.0
- 40
-3.0
-290
-     1
-  0
-RAPIDRTRENDERSETTINGS
-  5
-252
-102
-{ACAD_REACTORS
-330
-250
-102
-}
-330
-250
-100
-AcDbRenderSettings
- 90
-        2
-  1
-Medium
-290
-     1
-290
-     0
-290
-     1
-290
-     1
-  1
-
-  1
-Applies 5 rendering levels
- 90
-        1
-100
-AcDbRapidRTRenderSettings
- 90
-        3
- 70
-     0
- 90
-        5
- 90
-        1
- 70
-     1
- 70
-     2
- 40
-3.0
- 40
-3.0
-290
-     1
-  0
-RAPIDRTRENDERSETTINGS
-  5
-256
-102
-{ACAD_REACTORS
-330
-250
-102
-}
-330
-250
-100
-AcDbRenderSettings
- 90
-        2
-  1
-Overnight Quality
-290
-     1
-290
-     0
-290
-     1
-290
-     1
-  1
-
-  1
-Renders for 12 hours
- 90
-        5
-100
-AcDbRapidRTRenderSettings
- 90
-        3
- 70
-     1
- 90
-        1
- 90
-      720
- 70
-     2
- 70
-     2
- 40
-3.0
- 40
-3.0
-290
-     1
-  0
 SCALE
   5
 B7
@@ -5864,130 +5320,6 @@ I, O, Q, S, X, Z
         1
 300
 %<\AcVar ViewType \f "%tc1">% %<\AcVar ViewSectionStartId>%-%<\AcVar ViewSectionEndId>%\PSCALE %<\AcVar ViewScale \f "%sn">%
- 71
-     4
- 62
-   256
- 62
-   257
-300
-ANSI31
- 40
-1.0
- 90
-        0
-290
-     0
-290
-     0
- 90
-        6
- 40
-0.0
- 40
-1.570796326794896
- 40
-0.2617993877991494
- 40
-1.308996938995747
- 40
--0.2617993877991494
- 40
-1.832595714594046
-  0
-ACDBSECTIONVIEWSTYLE
-  5
-260
-102
-{ACAD_REACTORS
-330
-1A8
-102
-}
-330
-1A8
-100
-AcDbModelDocViewStyle
- 70
-     0
-  3
-Metric50
-290
-     0
-300
-Metric50
- 90
-        0
-100
-AcDbSectionViewStyle
- 70
-     0
- 71
-     0
- 90
-      102
- 71
-     1
-340
-11
- 62
-   256
- 40
-5.0
-340
-0
-340
-0
- 62
-   256
- 40
-5.0
-300
-I, O, Q, S, X, Z
- 40
-10.0
- 90
-        0
- 40
-2.5
- 90
-        0
- 71
-     2
-340
-16
- 90
-       25
- 62
-   256
-340
-16
- 90
-       50
- 62
-   256
- 40
-5.0
- 40
-2.5
- 40
-5.0
- 71
-     3
-340
-11
- 62
-   256
- 40
-5.0
- 90
-        0
- 40
-15.0
- 90
-        1
-300
-%<\AcVar ViewSectionStartId>%-%<\AcVar ViewSectionEndId>% (%<\AcVar ViewScale \f "%sn">%)
  71
      4
  62
@@ -12761,7 +12093,7 @@ AcDbDictionary
   3
 ACAD_ROUNDTRIP_2008_TABLESTYLE_CELLSTYLEMAP
 360
-287
+283
   0
 XRECORD
   5
@@ -13181,7 +12513,7 @@ AcDbXrecord
   0
 CELLSTYLEMAP
   5
-287
+283
 102
 {ACAD_REACTORS
 330

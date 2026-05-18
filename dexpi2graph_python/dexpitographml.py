@@ -47,10 +47,10 @@ col_left = [
     [psg.Text("Processing Information / Console...")],
     [psg.Output(size=(60, 30), key="_output_")],
     [
-        psg.Button("Convert"),
+        psg.Button("Convert", enable_events=True),
         psg.Checkbox("Include xmplant output", key="xmplant_output", default=False),
         psg.Text(
-            "Ready...", key="status_text", text_color="green", background_color="white"
+            "Ready...", key="status_text", text_color="green", background_color="white", enable_events=True
         ),
     ],
     [

@@ -1,0 +1,14 @@
+============================================================
+  ANNOTATED DXF — DETECTION SUMMARY
+============================================================
+  Total detections : 0
+
+  By category:
+
+  By match type:
+
+  Motor assemblies (RIGHT/LEFT_GATE/GLOBE_MOTOR_OPEN/CLOSE):
+    (none found)
+
+  Top symbols:
+============================================================
